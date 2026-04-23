@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>账号设置 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 28px;
+        }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #E5E5EA;
+            transition: .3s;
+            border-radius: 34px;
+        }
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 22px; width: 22px;
+            left: 3px; bottom: 3px;
+            background-color: white;
+            transition: .3s;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        input:checked + .slider { background: var(--primary-gradient); }
+        input:checked + .slider:before { transform: translateX(22px); }
+
+        .settings-group-title {
+            font-size: 13px;
+            color: var(--text-muted);
+            margin: 24px 0 8px 16px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>账号设置</h1>
+    </div>
+
+    <div class="container animate-up">
+        <!-- 账号安全 -->
+        <div class="settings-group-title">个人信息与安全</div>
+        <div class="card" style="padding: 10px 0;">
+            <div class="list-item" style="padding: 18px 24px;">
+                <span>绑定手机</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span id="phoneMask" style="color: var(--text-muted); font-size: 14px;">152****4701</span>
+                    <span style="color: var(--text-muted);">›</span>
+                </div>
+            </div>
+            <div class="list-item" style="padding: 18px 24px;">
+                <span>实名状态</span>
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <span class="badge badge-success">已实名</span>
+                    <span style="color: var(--text-muted);">›</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 消息设置 -->
+        <div class="settings-group-title">消息提醒</div>
+        <div class="card" style="padding: 10px 0;">
+            <div class="list-item" style="padding: 18px 24px;">
+                <div>
+                    <div>随访强提醒</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">开启后将通过短信及小程序同步提醒</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+            <div class="list-item" style="padding: 18px 24px;">
+                <div>
+                    <div>教育内容更新推送</div>
+                    <div style="font-size: 12px; color: var(--text-muted);">接收最新的用药指导与健康百科</div>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+        </div>
+
+        <!-- 隐私 -->
+        <div class="settings-group-title">隐私与权限</div>
+        <div class="card" style="padding: 10px 0;">
+            <div class="list-item" style="padding: 18px 24px;" onclick="location.href='agreements.html'">
+                <span>相关协议回顾</span>
+                <span style="color: var(--text-muted);">›</span>
+            </div>
+        </div>
+
+        <div style="margin-top: 40px; padding: 0 10px;">
+            <button class="btn btn-outline" style="border-radius: 20px; font-size: 15px; margin-bottom: 20px;" onclick="App.logout()">退出登录</button>
+            <div style="text-align: center;">
+                <span style="font-size: 13px; color: var(--danger-color); cursor: pointer; text-decoration: underline;" onclick="handleDeleteAccount()">注销账号</span>
+            </div>
+            <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 30px;">
+                君实生物患者管理项目 v1.0.4<br>
+                始终守护您的生命健康
+            </p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        const patient = App.getPatientInfo();
+        if (patient) {
+            const p = patient.phone || '';
+            document.getElementById('phoneMask').innerText = p.slice(0,3) + '****' + p.slice(-4);
+        }
+
+        function handleDeleteAccount() {
+            const confirmed = confirm('【警告】注销账号将永久删除您的所有随访记录，并立即终止入组管理流程。此操作不可逆，确定继续吗？');
+            if (confirmed) {
+                const finalConfirm = prompt('请输入“确认注销”以继续');
+                if (finalConfirm === '确认注销') {
+                    localStorage.removeItem('patient_info');
+                    alert('账号已成功注销，已清理您的所有数据。');
+                    window.location.href = 'scan.html';
+                } else if (finalConfirm !== null) {
+                    alert('输入错误，注销失败');
+                }
+            }
+        }
+    </script>
+</body>
+</html>

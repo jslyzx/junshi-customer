@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>完善病历 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .option-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #F2F2F7;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-pill.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="header">
+        <h1>完善建档资料</h1>
+    </div>
+
+    <div class="container animate-up">
+        <div class="form-section-title">诊断背景</div>
+        <div class="form-section">
+            <div class="form-cell">
+                <div class="cell-label">确诊疾病</div>
+                <div class="cell-value">
+                    <select id="diagnosis">
+                        <option value="">请选择诊断结果</option>
+                        <option value="肺癌">非小细胞肺癌</option>
+                        <option value="黑色素瘤">黑色素瘤</option>
+                        <option value="鼻咽癌">鼻咽癌</option>
+                        <option value="胃癌">胃腺癌/胃食管结合部腺癌</option>
+                        <option value="其他">其他恶性肿瘤</option>
+                    </select>
+                    <div class="cell-arrow"></div>
+                </div>
+            </div>
+
+            <div class="form-cell">
+                <div class="cell-label">确诊日期</div>
+                <div class="cell-value">
+                    <input type="date" id="diagnosisDate">
+                    <div class="cell-arrow"></div>
+                </div>
+            </div>
+
+            <div class="form-cell cell-group-vertical">
+                <div class="cell-label">疾病分期 (TNM)</div>
+                <div style="display: flex; gap: 8px; flex-wrap: wrap;">
+                    <button class="option-pill active" onclick="selectStage(this)">I期</button>
+                    <button class="option-pill" onclick="selectStage(this)">II期</button>
+                    <button class="option-pill" onclick="selectStage(this)">III期</button>
+                    <button class="option-pill" onclick="selectStage(this)">IV期</button>
+                </div>
+                <input type="hidden" id="stage" value="I期">
+            </div>
+        </div>
+
+        <div class="form-section-title">常住信息</div>
+        <div class="form-section">
+            <div class="form-cell">
+                <div class="cell-label">居住地址</div>
+                <div class="cell-value">
+                    <input type="text" id="address" placeholder="省、市、具体地址">
+                </div>
+            </div>
+        </div>
+
+        <div style="margin-top: 32px;">
+            <button class="btn btn-primary" onclick="handleProfileSubmit()">确认并进入管理中心</button>
+            <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 20px;">
+                此信息仅用于临床随访研究，请确保真实有效
+            </p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        App.checkAuth('profile.html');
+
+        // 初始化数据回显
+        initPage();
+
+        function initPage() {
+            const info = App.getPatientInfo();
+            if (info && info.hasProfile) {
+                document.querySelector('.header h1').innerText = '个人病史资料';
+                document.getElementById('diagnosis').value = info.diagnosis || '';
+                document.getElementById('diagnosisDate').value = info.diagnosisDate || '';
+                document.getElementById('address').value = info.address || '';
+                
+                // 处理分期按钮状态
+                if (info.stage) {
+                    document.getElementById('stage').value = info.stage;
+                    document.querySelectorAll('.option-pill').forEach(btn => {
+                        if (btn.innerText === info.stage) btn.classList.add('active');
+                        else btn.classList.remove('active');
+                    });
+                }
+
+                // 修改按钮文字
+                document.querySelector('.btn-primary').innerText = '保存修改';
+            }
+        }
+
+        function selectStage(el) {
+            document.querySelectorAll('.option-pill').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('stage').value = el.innerText;
+        }
+
+        function handleProfileSubmit() {
+            const diagnosis = document.getElementById('diagnosis').value;
+            const diagnosisDate = document.getElementById('diagnosisDate').value;
+            if (!diagnosis || !diagnosisDate) { alert('请填写核心诊断信息'); return; }
+            
+            App.savePatientInfo({
+                diagnosis,
+                stage: document.getElementById('stage').value,
+                diagnosisDate,
+                address: document.getElementById('address').value,
+                hasProfile: true,
+                consentStatus: 'pending'
+            });
+            App.navigateTo('index.html');
+        }
+    </script>
+</body>
+</html>

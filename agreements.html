@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>相关协议 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .agreement-content {
+            padding: 24px;
+            background: white;
+            border-radius: 24px;
+            margin-top: 20px;
+            font-size: 14px;
+            line-height: 1.8;
+            color: var(--text-secondary);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>相关协议回顾</h1>
+    </div>
+
+    <div class="container animate-up">
+        <div class="card" style="padding: 10px 0;">
+            <div class="list-item" style="padding: 18px 24px;" onclick="showDetail('用户服务协议')">
+                <span>《用户服务协议》</span>
+                <span style="color: var(--text-muted);">›</span>
+            </div>
+            <div class="list-item" style="padding: 18px 24px;" onclick="showDetail('内控隐私协议')">
+                <span>《内控隐私协议》</span>
+                <span style="color: var(--text-muted);">›</span>
+            </div>
+        </div>
+
+        <div id="detailView" class="hidden">
+            <h3 id="detailTitle" style="text-align: center; margin: 30px 0 10px;">协议正文</h3>
+            <div class="agreement-content">
+                <p><strong>[ 模拟协议内容 ]</strong></p>
+                <p>欢迎阅读君实生物患者管理项目。本协议是您与君实生物之间关于使用本项目服务所订立的法律协议。</p>
+                <p>1. 数据安全：我们采用业界领先的加密技术保护您的生物医药数据信息。</p>
+                <p>2. 用户义务：您需确保提供的病历资料及个人身份信息真实、准确、有效。</p>
+                <p>3. 隐私保护：除法律规定或由于您的授权外，我们不会将您的信息透露给第三方。</p>
+                <p>4. 治疗免责：本项目作为辅助管理工具，不能替代医生的现场诊断，请严格遵医嘱。</p>
+                <p>...... (详细条款略)</p>
+            </div>
+        </div>
+
+        <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 40px;">
+            更新版本：2024年03月20日修订
+        </p>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        function showDetail(name) {
+            document.getElementById('detailView').classList.remove('hidden');
+            document.getElementById('detailTitle').innerText = name;
+            // 平滑滚动到正文
+            window.scrollTo({
+                top: document.body.scrollHeight,
+                behavior: 'smooth'
+            });
+        }
+    </script>
+</body>
+</html>

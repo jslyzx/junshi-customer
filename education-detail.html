@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>科普详情 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .article-hero {
+            height: 110px;
+            background: linear-gradient(160deg, #E5F1FF 0%, #FFFFFF 100%);
+            border-radius: 0 0 40px 40px;
+            margin-bottom: -80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .article-hero::before {
+            content: '';
+            position: absolute;
+            top: -20%; right: -10%;
+            width: 150px; height: 150px;
+            background: rgba(0, 122, 255, 0.08);
+            border-radius: 50%;
+            filter: blur(40px);
+        }
+        .content-card {
+            position: relative;
+            z-index: 2;
+            padding: 32px 24px;
+            border-radius: 28px !important;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.05) !important;
+        }
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 13px;
+            color: var(--text-muted);
+            margin-bottom: 24px;
+        }
+        .article-title {
+            font-size: 26px;
+            font-weight: 800;
+            line-height: 1.35;
+            margin-bottom: 16px;
+            color: var(--text-main);
+            letter-spacing: -0.5px;
+        }
+        .article-body {
+            line-height: 1.85;
+            color: #3A3A3C;
+        }
+        .article-body h3 {
+            font-size: 19px;
+            font-weight: 700;
+            margin: 40px 0 16px;
+            color: var(--text-main);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .article-body h3::before {
+            content: '';
+            width: 4px; height: 18px;
+            background: var(--primary-gradient);
+            border-radius: 2px;
+        }
+        .article-body p {
+            margin-bottom: 24px;
+            font-size: 16px;
+            letter-spacing: 0.2px;
+        }
+        .quote-box {
+            background: rgba(0, 122, 255, 0.05);
+            border-left: 5px solid var(--primary-color);
+            padding: 20px 24px;
+            border-radius: 4px 20px 20px 4px;
+            font-size: 15px;
+            font-style: italic;
+            margin: 32px 0;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .image-placeholder {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #F2F2F7 0%, #E5E5EA 100%);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-muted);
+            font-size: 14px;
+            margin: 32px 0;
+            border: 1px dashed var(--glass-border);
+        }
+        .image-placeholder i { font-size: 24px; margin-bottom: 10px; opacity: 0.3; }
+        
+        .fav-btn {
+            width: 38px; height: 38px; border-radius: 12px;
+            background: #F2F2F7; color: var(--text-muted);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .fav-btn.active {
+            color: #FF9500; background: #FFF4E5; transform: scale(1.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>百科详情</h1>
+    </div>
+
+    <div class="article-hero animate-up"></div>
+
+    <div class="container" style="padding-top: 0;">
+        <div class="card content-card animate-up" style="animation-delay: 0.2s;">
+            <div id="type" class="badge badge-info" style="margin-bottom: 16px; display: inline-block;">用药指导</div>
+            <h2 id="title" class="article-title">初诊患者用药指导手册</h2>
+            
+            <div class="article-meta" style="justify-content: space-between;">
+                <div style="display: flex; gap: 12px; align-items: center;">
+                    <span>🕒 <span id="date">2024-03-20</span></span>
+                    <span>🔥 <span id="readCount">1250</span> 阅读</span>
+                </div>
+                <div class="fav-btn" id="favBtn" onclick="toggleFavorite()">☆</div>
+            </div>
+
+            <div class="article-body">
+                <p>正确的用药观念是治疗成功的一半。我们将为您系统梳理在治疗初期需要关注的核心事项。</p>
+                
+                <div class="quote-box">
+                    “医嘱是治疗的最高准则，如有疑问请第一时间联系您的主治医生或专员。”
+                </div>
+
+                <h3>一、科学服药</h3>
+                <p>请按处方规定时间服药，建议固定在每日早餐后。服药时请饮用足量温水，避免使用浓茶、咖啡或果汁送服，以免影响药物吸收率。</p>
+                
+                <h3>二、副作用观察</h3>
+                <p>初期可能会出现轻微的消化道反应或皮疹，这通常是身体适应过程中的表现。若出现高热、剧烈呕吐或大面积皮疹，请立即停药并联系医生。</p>
+                
+                <div class="image-placeholder">
+                    <i>🖼️</i>
+                    <span>核心药物存放示意图</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const id = parseInt(urlParams.get('id')) || 1;
+        const item = MockData.educationList.find(i => i.id === id) || MockData.educationList[0];
+
+        document.getElementById('title').innerText = item.title;
+        document.getElementById('type').innerText = item.type;
+        document.getElementById('date').innerText = item.date;
+        document.getElementById('readCount').innerText = item.readCount;
+
+        // 收藏逻辑
+        let isFav = false;
+        
+        function checkFavorite() {
+            const info = App.getPatientInfo() || {};
+            const favs = info.favorites || [];
+            isFav = favs.includes(id);
+            updateFavUI();
+        }
+
+        function updateFavUI() {
+            const btn = document.getElementById('favBtn');
+            btn.className = isFav ? 'fav-btn active' : 'fav-btn';
+            btn.innerText = isFav ? '★' : '☆';
+        }
+
+        function toggleFavorite() {
+            const info = App.getPatientInfo() || {};
+            let favs = info.favorites || [];
+            
+            if (isFav) {
+                favs = favs.filter(fid => fid !== id);
+                alert('已取消收藏');
+            } else {
+                favs.push(id);
+                // alert('收藏成功'); -> 可使用更柔和的提示，Demo 中用 alert 代替toast
+                alert('收藏成功，可在「我的」查看');
+            }
+            
+            info.favorites = favs;
+            App.savePatientInfo(info);
+            isFav = !isFav;
+            updateFavUI();
+        }
+
+        checkFavorite();
+    </script>
+</body>
+</html>
