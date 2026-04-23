@@ -167,6 +167,34 @@
         .consent-add-btn:active { background: var(--primary-soft); }
         .consent-add-btn span:first-child { font-size: 22px; color: var(--primary-color); }
         .consent-add-btn span:last-child { font-size: 10px; color: var(--text-muted); }
+
+        /* 全屏预览模态框 */
+        .viewer-modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .viewer-modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        .viewer-img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 8px; }
+        .viewer-close {
+            position: absolute; top: 40px; right: 25px; width: 44px; height: 44px;
+            background: rgba(255,255,255,0.2); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2010;
+        }
+        .viewer-nav {
+            position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between;
+            transform: translateY(-50%); padding: 0 20px; pointer-events: none;
+        }
+        .viewer-nav-btn {
+            width: 50px; height: 50px; background: rgba(255,255,255,0.1); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 30px; pointer-events: auto; backdrop-filter: blur(5px);
+        }
+        .viewer-info {
+            position: absolute; bottom: 40px; left: 0; right: 0; text-align: center;
+            color: white; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -196,21 +224,21 @@
                     <div class="doc-name">身份证正面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-idcard">
+                    <img class="doc-thumb" id="thumb-idcard" onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-diagnosis" onclick="triggerUpload('diagnosis')">
                     <div class="doc-icon" style="background: #FFF2E6;">📋</div>
                     <div class="doc-name">诊断证明</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-diagnosis">
+                    <img class="doc-thumb" id="thumb-diagnosis" onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-prescription" onclick="triggerUpload('prescription')">
                     <div class="doc-icon" style="background: #E8F8E8;">💊</div>
                     <div class="doc-name">处方单</div>
                     <div class="doc-hint">选传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-prescription">
+                    <img class="doc-thumb" id="thumb-prescription" onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-consent" onclick="triggerConsentUpload()">
                     <div class="doc-icon" style="background: #F3E8FF;">🖋️</div>
@@ -322,12 +350,46 @@
         </div>
     </div>
 
+    <!-- 图片预览模态框 -->
+    <div id="imageViewer" class="viewer-modal" onclick="closeViewer()">
+        <div class="viewer-close">✕</div>
+        <div class="viewer-nav">
+            <div class="viewer-nav-btn" onclick="event.stopPropagation(); switchViewerPage(-1)">‹</div>
+            <div class="viewer-nav-btn" onclick="event.stopPropagation(); switchViewerPage(1)">›</div>
+        </div>
+        <img id="viewerImg" class="viewer-img">
+        <div id="viewerInfo" class="viewer-info">第 1 / 1 页</div>
+    </div>
+
     <script src="js/app.js"></script>
     <script>
+        const patient = App.getPatientInfo() || {};
         let currentUploadType = '';
         const uploadedTypes = {};
         const ocrData = {};
         const consentPages = []; // 知情同意书多页数组
+
+        // 初始化：同步已上传的知情同意书
+        if (patient.consentPhotos && patient.consentPhotos.length > 0) {
+            patient.consentPhotos.forEach(p => consentPages.push(p));
+            setTimeout(() => {
+                renderConsentPages();
+                const card = document.getElementById('card-consent');
+                card.classList.add('uploaded');
+                document.getElementById('consent-hint').innerText = `已同步 ${consentPages.length} 页`;
+            }, 100);
+        }
+
+        // 初始化：填充手机号
+        if (patient.phone) {
+            setTimeout(() => {
+                document.getElementById('r-phone').value = patient.phone;
+                const btn = document.getElementById('phoneAuthBtn');
+                btn.classList.add('authorized');
+                btn.innerHTML = '<span style="font-size: 18px;">✅</span><span>手机号已授权</span>';
+                btn.onclick = null;
+            }, 100);
+        }
 
         function triggerUpload(type) {
             currentUploadType = type;
@@ -379,7 +441,7 @@
             document.getElementById('consentCount').innerText = `已上传 ${consentPages.length} 页`;
 
             let html = consentPages.map((src, i) => `
-                <div class="consent-page-item">
+                <div class="consent-page-item" onclick="openViewer(consentPages, ${i})">
                     <img src="${src}">
                     <div class="consent-page-num">第 ${i + 1} 页</div>
                     <div class="consent-page-del" onclick="event.stopPropagation(); removeConsentPage(${i})">✕</div>
@@ -502,6 +564,32 @@
 
             alert('建档成功！资料已提交审核');
             App.navigateTo('index.html');
+        }
+
+        // 预览放大逻辑
+        let viewerPhotos = [];
+        let viewerIndex = 0;
+
+        function openViewer(srcList, index = 0) {
+            viewerPhotos = Array.isArray(srcList) ? srcList : [srcList];
+            viewerIndex = index;
+            updateViewer();
+            document.getElementById('imageViewer').classList.add('active');
+        }
+
+        function updateViewer() {
+            document.getElementById('viewerImg').src = viewerPhotos[viewerIndex];
+            document.getElementById('viewerInfo').innerText = `第 ${viewerIndex + 1} / ${viewerPhotos.length} 页`;
+            document.querySelector('.viewer-nav').style.display = viewerPhotos.length > 1 ? 'flex' : 'none';
+        }
+
+        function switchViewerPage(dir) {
+            viewerIndex = (viewerIndex + dir + viewerPhotos.length) % viewerPhotos.length;
+            updateViewer();
+        }
+
+        function closeViewer() {
+            document.getElementById('imageViewer').classList.remove('active');
         }
     </script>
 </body>

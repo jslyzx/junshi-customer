@@ -51,6 +51,69 @@
             position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
             background: rgba(0,0,0,0.5); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;
         }
+
+        /* 知情同意书多页上传样式 */
+        .consent-multi-area {
+            margin-top: 14px; padding: 16px; background: white;
+            border-radius: 20px; border: 1px solid #F0F2F5;
+        }
+        .consent-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+        }
+        .consent-header-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .consent-count { font-size: 12px; color: var(--text-muted); }
+        .consent-pages {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .consent-pages::-webkit-scrollbar { display: none; }
+        .consent-page-item {
+            position: relative; width: 80px; height: 110px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
+            border: 1px solid #EBEDF0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        }
+        .consent-page-item img { width: 100%; height: 100%; object-fit: cover; }
+        .consent-page-num {
+            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5);
+            color: white; font-size: 10px; text-align: center; padding: 2px 0;
+        }
+        .consent-page-del {
+            position: absolute; top: 4px; right: 4px; width: 18px; height: 18px;
+            background: rgba(255,59,48,0.9); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 10px;
+        }
+        .consent-add-btn {
+            width: 80px; height: 110px; border-radius: 12px; border: 1.5px dashed #C7C7CC;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            color: #8E8E93; gap: 6px; flex-shrink: 0; background: #F2F2F7;
+        }
+
+        /* 全屏预览模态框 */
+        .viewer-modal {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.9); z-index: 2000;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+        .viewer-modal.active { display: flex; animation: fadeIn 0.3s ease; }
+        .viewer-img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 8px; }
+        .viewer-close {
+            position: absolute; top: 40px; right: 25px; width: 44px; height: 44px;
+            background: rgba(255,255,255,0.2); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2010;
+        }
+        .viewer-nav {
+            position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between;
+            transform: translateY(-50%); padding: 0 20px; pointer-events: none;
+        }
+        .viewer-nav-btn {
+            width: 50px; height: 50px; background: rgba(255,255,255,0.1); color: white;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            font-size: 30px; pointer-events: auto; backdrop-filter: blur(5px);
+        }
+        .viewer-info {
+            position: absolute; bottom: 40px; left: 0; right: 0; text-align: center;
+            color: white; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
     </style>
 </head>
 <body>
@@ -64,26 +127,31 @@
         <!-- 上传视图 -->
         <div id="uploadView">
             <div class="card" style="border:none">
-                <div class="card-title">提交入组凭证</div>
-                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 24px; line-height: 1.6;">
-                    请上传您已签署的纸质《知情同意书》照片。确保所有字迹清晰可见。
+                <div class="card-title">提交知情同意书</div>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
+                    临床试验需要您签署纸质《知情同意书》，请将所有签署页拍照并在此处上传。
                 </p>
                 
-                <div class="upload-area" onclick="document.getElementById('fileInput').click()">
+                <div class="upload-area" id="mainUploadBtn" onclick="document.getElementById('fileInput').click()">
                     <span style="font-size: 50px; display: block; margin-bottom: 15px;">📄</span>
                     <div style="font-weight: 700; color: var(--primary-color); font-size: 18px;">点击拍摄或上传</div>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">确保图像光线均匀，内容完整</p>
+                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">支持多页连续上传</p>
                 </div>
                 <input type="file" id="fileInput" hidden accept="image/*" onchange="previewImage(this)">
                 
-                <div id="previewBox" style="display: none; margin-top: 24px;">
-                    <div class="image-preview-container">
-                        <img id="uploadPreview">
+                <!-- 多页预览区域 -->
+                <div id="consentMultiArea" class="consent-multi-area" style="display: none;">
+                    <div class="consent-header">
+                        <span class="consent-header-title">已添加页码</span>
+                        <span class="consent-count" id="consentCount">已上传 0 页</span>
+                    </div>
+                    <div class="consent-pages" id="consentPagesList">
+                        <!-- 动态渲染 -->
                     </div>
                 </div>
             </div>
             
-            <button class="btn btn-primary" id="submitBtn" disabled onclick="submitConsent()" style="margin-top: 10px;">立即提交审核</button>
+            <button class="btn btn-primary" id="submitBtn" disabled onclick="submitConsent()" style="margin-top: 10px;">确认提交审核</button>
         </div>
 
         <!-- 详情视图 -->
@@ -98,7 +166,7 @@
 
             <div class="card">
                 <div class="card-title">已上传文件预览</div>
-                <div class="image-preview-container">
+                <div class="image-preview-container" onclick="openViewer(photos, currentPage)">
                     <img id="finalPreview">
                     <div id="navControls" class="image-nav">
                         <div class="nav-btn" onclick="switchPage(-1)">‹</div>
@@ -127,13 +195,24 @@
             </div>
         </div>
     </div>
+    
+    <!-- 图片预览模态框 -->
+    <div id="imageViewer" class="viewer-modal" onclick="closeViewer()">
+        <div class="viewer-close">✕</div>
+        <div class="viewer-nav">
+            <div class="viewer-nav-btn" onclick="event.stopPropagation(); switchViewerPage(-1)">‹</div>
+            <div class="viewer-nav-btn" onclick="event.stopPropagation(); switchViewerPage(1)">›</div>
+        </div>
+        <img id="viewerImg" class="viewer-img">
+        <div id="viewerInfo" class="viewer-info">第 1 / 1 页</div>
+    </div>
 
     <script src="js/app.js"></script>
     <script>
-        const patient = App.getPatientInfo();
-
+        const patient = App.getPatientInfo() || {};
         let currentPage = 0;
         let photos = [];
+        let uploadPages = []; // 当前正在上传的页码
 
         function initConsentPage() {
             if (patient.consentPhotos && patient.consentPhotos.length > 0 && patient.consentStatus !== 'withdrawn') {
@@ -147,12 +226,6 @@
         function showUploadView() {
             document.getElementById('uploadView').classList.remove('hidden');
             document.getElementById('manageView').classList.add('hidden');
-            if (patient.consentStatus === 'withdrawn') {
-                const banner = document.createElement('div');
-                banner.className = 'status-header withdrawn';
-                banner.innerHTML = '<div>🚫</div><div><div style="font-weight:800">已撤回</div><div style="font-size:12px">您可以重新上传新的知情同意书</div></div>';
-                document.getElementById('uploadView').prepend(banner);
-            }
         }
 
         function showManageView() {
@@ -189,23 +262,88 @@
             if (input.files[0]) {
                 const reader = new FileReader();
                 reader.onload = e => {
-                    document.getElementById('uploadPreview').src = e.target.result;
-                    document.getElementById('previewBox').style.display = 'block';
-                    document.getElementById('submitBtn').disabled = false;
+                    uploadPages.push(e.target.result);
+                    renderUploadPages();
                 };
                 reader.readAsDataURL(input.files[0]);
+                input.value = ''; // 清空以支持同名文件多次选择
             }
         }
 
+        function renderUploadPages() {
+            const container = document.getElementById('consentPagesList');
+            const area = document.getElementById('consentMultiArea');
+            const mainBtn = document.getElementById('mainUploadBtn');
+            
+            if (uploadPages.length > 0) {
+                area.style.display = 'block';
+                mainBtn.style.display = 'none'; // 上传多页后隐藏主按钮，使用列表中的添加按钮
+                document.getElementById('submitBtn').disabled = false;
+            }
+
+            document.getElementById('consentCount').innerText = `已上传 ${uploadPages.length} 页`;
+
+            let html = uploadPages.map((src, i) => `
+                <div class="consent-page-item" onclick="openViewer(uploadPages, ${i})">
+                    <img src="${src}">
+                    <div class="consent-page-num">第 ${i + 1} 页</div>
+                    <div class="consent-page-del" onclick="event.stopPropagation(); removeUploadPage(${i})">✕</div>
+                </div>
+            `).join('');
+            
+            html += `
+                <div class="consent-add-btn" onclick="document.getElementById('fileInput').click()">
+                    <span>+</span>
+                    <span style="font-size: 11px;">继续添加</span>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function removeUploadPage(index) {
+            uploadPages.splice(index, 1);
+            if (uploadPages.length === 0) {
+                document.getElementById('consentMultiArea').style.display = 'none';
+                document.getElementById('mainUploadBtn').style.display = 'block';
+                document.getElementById('submitBtn').disabled = true;
+            }
+            renderUploadPages();
+        }
+
         function submitConsent() {
-            const previewSrc = document.getElementById('uploadPreview').src;
             App.savePatientInfo({
-                consentPhotos: [previewSrc],
+                consentPhotos: uploadPages,
                 consentStatus: 'active',
                 consentDate: App.formatDate(new Date())
             });
             alert('入组资料已提交，请等待审核');
             window.location.reload();
+        }
+
+        // 预览放大逻辑
+        let viewerPhotos = [];
+        let viewerIndex = 0;
+
+        function openViewer(srcList, index = 0) {
+            viewerPhotos = Array.isArray(srcList) ? srcList : [srcList];
+            viewerIndex = index;
+            updateViewer();
+            document.getElementById('imageViewer').classList.add('active');
+        }
+
+        function updateViewer() {
+            document.getElementById('viewerImg').src = viewerPhotos[viewerIndex];
+            document.getElementById('viewerInfo').innerText = `第 ${viewerIndex + 1} / ${viewerPhotos.length} 页`;
+            document.querySelector('.viewer-nav').style.display = viewerPhotos.length > 1 ? 'flex' : 'none';
+        }
+
+        function switchViewerPage(dir) {
+            viewerIndex = (viewerIndex + dir + viewerPhotos.length) % viewerPhotos.length;
+            updateViewer();
+        }
+
+        function closeViewer() {
+            document.getElementById('imageViewer').classList.remove('active');
         }
 
         initConsentPage();
