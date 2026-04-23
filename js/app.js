@@ -88,9 +88,25 @@ const MockData = {
         { id: 'D002', name: '李主任', hospital: '君实附属第一医院', dept: '免疫科', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aria' }
     ],
     educationList: [
-        { id: 1, title: '初诊患者用药指导手册', type: '用药指导', date: '2024-03-20', readCount: 1250, cover: 'doc-cover-1' },
-        { id: 2, title: '日常生活中的营养膳食建议', type: '生活调理', date: '2024-03-18', readCount: 840, cover: 'doc-cover-2' },
-        { id: 3, title: '常见副作用的处理方法', type: '注意事项', date: '2024-03-15', readCount: 2100, cover: 'doc-cover-3' }
+        // 疾病知识
+        { id: 1, title: '非小细胞肺癌分型与分期详解', category: '疾病知识', type: '图文', date: '2024-04-15', readCount: 3200, icon: '📖' },
+        { id: 2, title: '免疫治疗的作用原理与适应症', category: '疾病知识', type: '图文', date: '2024-04-10', readCount: 2850, icon: '📖' },
+        { id: 3, title: 'PD-1/PD-L1 抑制剂常见问答', category: '疾病知识', type: '图文', date: '2024-04-05', readCount: 4100, icon: '📖' },
+        { id: 4, title: '肿瘤标志物指标解读指南', category: '疾病知识', type: '图文', date: '2024-03-28', readCount: 1870, icon: '📖' },
+        // 健康资讯
+        { id: 5, title: '治疗期间营养膳食搭配建议', category: '健康资讯', type: '图文', date: '2024-04-12', readCount: 1560, icon: '💡' },
+        { id: 6, title: '化疗后居家护理注意事项', category: '健康资讯', type: '图文', date: '2024-04-08', readCount: 2340, icon: '💡' },
+        { id: 7, title: '放疗后皮肤管理与日常防护', category: '健康资讯', type: '图文', date: '2024-04-01', readCount: 980, icon: '💡' },
+        { id: 8, title: '运动康复：适合肿瘤患者的锻炼方式', category: '健康资讯', type: '图文', date: '2024-03-25', readCount: 1230, icon: '💡' },
+        // 专家讲座
+        { id: 9, title: '王医生：免疫联合治疗的最新进展', category: '专家讲座', type: '回放', date: '2024-04-14', readCount: 5600, icon: '🎓', duration: '45 min' },
+        { id: 10, title: '李主任：ADC 药物的临床应用与展望', category: '专家讲座', type: '回放', date: '2024-04-07', readCount: 3200, icon: '🎓', duration: '38 min' },
+        { id: 11, title: '张教授：肿瘤患者心理调适与支持', category: '专家讲座', type: '回放', date: '2024-03-30', readCount: 2100, icon: '🎓', duration: '52 min' },
+        // 视频教育
+        { id: 12, title: '输液港日常维护操作演示', category: '视频教育', type: '视频', date: '2024-04-11', readCount: 4300, icon: '🎬', duration: '8 min' },
+        { id: 13, title: '居家自我注射操作指南', category: '视频教育', type: '视频', date: '2024-04-06', readCount: 2900, icon: '🎬', duration: '12 min' },
+        { id: 14, title: '常见药物不良反应的自我识别', category: '视频教育', type: '视频', date: '2024-03-29', readCount: 3700, icon: '🎬', duration: '15 min' },
+        { id: 15, title: 'PICC 导管居家护理要点', category: '视频教育', type: '视频', date: '2024-03-22', readCount: 1800, icon: '🎬', duration: '10 min' }
     ],
     messages: [
         { id: 101, title: '随访提醒', content: '您有一个新的随访计划，请及时查看并填报。', time: '10:30', unread: true },
