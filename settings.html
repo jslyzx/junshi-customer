@@ -106,9 +106,6 @@
 
         <div style="margin-top: 40px; padding: 0 10px;">
             <button class="btn btn-outline" style="border-radius: 20px; font-size: 15px; margin-bottom: 20px;" onclick="App.logout()">退出登录</button>
-            <div style="text-align: center;">
-                <span style="font-size: 13px; color: var(--danger-color); cursor: pointer; text-decoration: underline;" onclick="handleDeleteAccount()">注销账号</span>
-            </div>
             <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 30px;">
                 君实生物患者管理项目 v1.0.4<br>
                 始终守护您的生命健康
@@ -124,19 +121,6 @@
             document.getElementById('phoneMask').innerText = p.slice(0,3) + '****' + p.slice(-4);
         }
 
-        function handleDeleteAccount() {
-            const confirmed = confirm('【警告】注销账号将永久删除您的所有随访记录，并立即终止入组管理流程。此操作不可逆，确定继续吗？');
-            if (confirmed) {
-                const finalConfirm = prompt('请输入“确认注销”以继续');
-                if (finalConfirm === '确认注销') {
-                    localStorage.removeItem('patient_info');
-                    alert('账号已成功注销，已清理您的所有数据。');
-                    window.location.href = 'scan.html';
-                } else if (finalConfirm !== null) {
-                    alert('输入错误，注销失败');
-                }
-            }
-        }
     </script>
 </body>
 </html>

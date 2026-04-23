@@ -38,6 +38,19 @@
         .status-header.pending { background: linear-gradient(135deg, #FFF9E6 0%, #FFF2CC 100%); color: #B28B00; }
         .status-header.success { background: linear-gradient(135deg, #E6F9EA 0%, #CEF1D6 100%); color: #1E7D32; }
         .status-header.withdrawn { background: linear-gradient(135deg, #FFF1F0 0%, #FFD8D6 100%); color: #CF1322; }
+
+        .image-nav {
+            position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 10px; pointer-events: none;
+        }
+        .nav-btn {
+            width: 36px; height: 36px; background: rgba(0,0,0,0.4); color: white; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
+            backdrop-filter: blur(4px); pointer-events: auto;
+        }
+        .page-indicator {
+            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
+            background: rgba(0,0,0,0.5); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;
+        }
     </style>
 </head>
 <body>
@@ -87,6 +100,11 @@
                 <div class="card-title">已上传文件预览</div>
                 <div class="image-preview-container">
                     <img id="finalPreview">
+                    <div id="navControls" class="image-nav">
+                        <div class="nav-btn" onclick="switchPage(-1)">‹</div>
+                        <div class="nav-btn" onclick="switchPage(1)">›</div>
+                    </div>
+                    <div id="pageIndicator" class="page-indicator">第 1 / 1 页</div>
                     <div style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; padding: 4px 12px; border-radius: 10px; font-size: 12px; backdrop-filter: blur(5px);">签署副本</div>
                 </div>
                 
@@ -103,8 +121,9 @@
             </div>
 
             <div style="padding: 20px; text-align: center;">
-                <button class="btn btn-outline" style="border-color: var(--danger-color); color: var(--danger-color);" onclick="withdrawConsent()">撤回知情同意</button>
-                <p style="margin-top: 15px; font-size: 12px; color: var(--text-muted); line-height: 1.5;">注：撤回意味着您将退出本项目的管理与随访体系，相关服务将立即停止。</p>
+                <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+                    您的知情同意书已归档并进入临床随访系统。如需修改或有任何疑问，请联系您的项目专员。
+                </p>
             </div>
         </div>
     </div>
@@ -113,8 +132,12 @@
     <script>
         const patient = App.getPatientInfo();
 
+        let currentPage = 0;
+        let photos = [];
+
         function initConsentPage() {
-            if (patient.consentPhoto && patient.consentStatus !== 'withdrawn') {
+            if (patient.consentPhotos && patient.consentPhotos.length > 0 && patient.consentStatus !== 'withdrawn') {
+                photos = patient.consentPhotos;
                 showManageView();
             } else {
                 showUploadView();
@@ -135,7 +158,7 @@
         function showManageView() {
             document.getElementById('uploadView').classList.add('hidden');
             document.getElementById('manageView').classList.remove('hidden');
-            document.getElementById('finalPreview').src = patient.consentPhoto;
+            updateImageView();
             document.getElementById('infoTime').innerText = patient.consentDate || App.formatDate(new Date());
             
             const banner = document.getElementById('statusBanner');
@@ -145,6 +168,21 @@
                 document.getElementById('statusDesc').innerText = '您的管理服务已全面开启';
                 document.getElementById('infoStatus').innerText = '正式生效';
             }
+
+            if (photos.length <= 1) {
+                document.getElementById('navControls').style.display = 'none';
+                document.getElementById('pageIndicator').style.display = 'none';
+            }
+        }
+
+        function updateImageView() {
+            document.getElementById('finalPreview').src = photos[currentPage];
+            document.getElementById('pageIndicator').innerText = `第 ${currentPage + 1} / ${photos.length} 页`;
+        }
+
+        function switchPage(dir) {
+            currentPage = (currentPage + dir + photos.length) % photos.length;
+            updateImageView();
         }
 
         function previewImage(input) {
@@ -160,20 +198,14 @@
         }
 
         function submitConsent() {
+            const previewSrc = document.getElementById('uploadPreview').src;
             App.savePatientInfo({
-                consentPhoto: document.getElementById('uploadPreview').src,
+                consentPhotos: [previewSrc],
                 consentStatus: 'active',
                 consentDate: App.formatDate(new Date())
             });
             alert('入组资料已提交，请等待审核');
             window.location.reload();
-        }
-
-        function withdrawConsent() {
-            if (confirm('撤回知情同意是严重行为，将导致入组终止，确定吗？')) {
-                App.savePatientInfo({ consentPhoto: null, consentStatus: 'withdrawn' });
-                window.location.reload();
-            }
         }
 
         initConsentPage();
