@@ -304,6 +304,7 @@
 
     <script src="js/app.js"></script>
     <script>
+        var currentEduCategory = '全部';
         if (App.checkAuth('index.html')) { initPage(); }
 
         function initPage() {
@@ -370,7 +371,6 @@
             document.querySelectorAll('.tab-item')[tabs.indexOf(tab)].classList.add('active');
         }
 
-        var currentEduCategory = '全部';
 
         function switchEduTab(category, el) {
             currentEduCategory = category;
