@@ -121,6 +121,52 @@
             border-style: solid; border-color: var(--success-color);
             background: #F0FFF4; color: var(--text-main); font-weight: 700;
         }
+
+        /* 知情同意书多页上传 */
+        .consent-multi-area {
+            margin-top: 14px; padding: 16px; background: white;
+            border-radius: 20px; border: 1px solid #F0F2F5;
+        }
+        .consent-header {
+            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+        }
+        .consent-header-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .consent-count { font-size: 12px; color: var(--text-muted); }
+        .consent-pages {
+            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px;
+            scrollbar-width: none; -ms-overflow-style: none;
+        }
+        .consent-pages::-webkit-scrollbar { display: none; }
+        .consent-page-item {
+            position: relative; flex-shrink: 0; width: 80px; height: 106px;
+            border-radius: 12px; overflow: hidden; border: 1px solid #E5E6EB;
+            box-shadow: var(--shadow-sm);
+        }
+        .consent-page-item img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .consent-page-num {
+            position: absolute; bottom: 0; left: 0; right: 0;
+            background: rgba(0,0,0,0.5); color: white; font-size: 10px;
+            text-align: center; padding: 2px 0; font-weight: 600;
+        }
+        .consent-page-del {
+            position: absolute; top: 4px; right: 4px;
+            width: 20px; height: 20px; border-radius: 50%;
+            background: rgba(0,0,0,0.5); color: white; font-size: 11px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; line-height: 1;
+        }
+        .consent-page-del:active { background: var(--danger-color); }
+        .consent-add-btn {
+            flex-shrink: 0; width: 80px; height: 106px; border-radius: 12px;
+            border: 2px dashed rgba(0, 122, 255, 0.2); display: flex;
+            flex-direction: column; align-items: center; justify-content: center;
+            cursor: pointer; gap: 4px; transition: all 0.2s;
+        }
+        .consent-add-btn:active { background: var(--primary-soft); }
+        .consent-add-btn span:first-child { font-size: 22px; color: var(--primary-color); }
+        .consent-add-btn span:last-child { font-size: 10px; color: var(--text-muted); }
     </style>
 </head>
 <body>
@@ -166,15 +212,30 @@
                     <div class="doc-check">✓</div>
                     <img class="doc-thumb" id="thumb-prescription">
                 </div>
-                <div class="doc-upload-card" id="card-consent" onclick="triggerUpload('consent')">
+                <div class="doc-upload-card" id="card-consent" onclick="triggerConsentUpload()">
                     <div class="doc-icon" style="background: #F3E8FF;">🖋️</div>
                     <div class="doc-name">知情同意书</div>
-                    <div class="doc-hint">必传 · 拍照上传</div>
+                    <div class="doc-hint" id="consent-hint">必传 · 支持多页</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-consent">
+                    <img class="doc-thumb" style="display:none">
                 </div>
             </div>
             <input type="file" id="fileInput" hidden accept="image/*" capture="environment">
+            <input type="file" id="consentFileInput" hidden accept="image/*" capture="environment">
+
+            <!-- 知情同意书多页上传区 -->
+            <div class="consent-multi-area" id="consentMultiArea" style="display: none;">
+                <div class="consent-header">
+                    <span class="consent-header-title">🖋️ 知情同意书</span>
+                    <span class="consent-count" id="consentCount">已上传 0 页</span>
+                </div>
+                <div class="consent-pages" id="consentPages">
+                    <div class="consent-add-btn" onclick="triggerConsentUpload()">
+                        <span>+</span>
+                        <span>添加</span>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <!-- OCR 识别中 -->
@@ -266,32 +327,83 @@
         let currentUploadType = '';
         const uploadedTypes = {};
         const ocrData = {};
+        const consentPages = []; // 知情同意书多页数组
 
         function triggerUpload(type) {
             currentUploadType = type;
             document.getElementById('fileInput').click();
         }
 
+        function triggerConsentUpload() {
+            document.getElementById('consentFileInput').click();
+        }
+
+        // 普通材料上传
         document.getElementById('fileInput').addEventListener('change', function() {
             if (!this.files[0]) return;
-            const file = this.files[0];
             const reader = new FileReader();
             reader.onload = function(e) {
                 const dataUrl = e.target.result;
-                // 标记卡片为已上传
                 const card = document.getElementById('card-' + currentUploadType);
                 card.classList.add('uploaded');
                 card.querySelector('.doc-hint').innerText = '已上传 ✓';
-                const thumb = document.getElementById('thumb-' + currentUploadType);
-                thumb.src = dataUrl;
+                document.getElementById('thumb-' + currentUploadType).src = dataUrl;
                 uploadedTypes[currentUploadType] = dataUrl;
-
-                // 触发 OCR 识别
                 runOCR(currentUploadType);
             };
-            reader.readAsDataURL(file);
-            this.value = ''; // 重置以允许重复上传
+            reader.readAsDataURL(this.files[0]);
+            this.value = '';
         });
+
+        // 知情同意书多页上传
+        document.getElementById('consentFileInput').addEventListener('change', function() {
+            if (!this.files[0]) return;
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                consentPages.push(e.target.result);
+                renderConsentPages();
+                // 标记卡片已上传
+                const card = document.getElementById('card-consent');
+                card.classList.add('uploaded');
+                document.getElementById('consent-hint').innerText = `已上传 ${consentPages.length} 页`;
+                uploadedTypes['consent'] = true;
+            };
+            reader.readAsDataURL(this.files[0]);
+            this.value = '';
+        });
+
+        function renderConsentPages() {
+            const container = document.getElementById('consentPages');
+            const area = document.getElementById('consentMultiArea');
+            area.style.display = 'block';
+            document.getElementById('consentCount').innerText = `已上传 ${consentPages.length} 页`;
+
+            let html = consentPages.map((src, i) => `
+                <div class="consent-page-item">
+                    <img src="${src}">
+                    <div class="consent-page-num">第 ${i + 1} 页</div>
+                    <div class="consent-page-del" onclick="event.stopPropagation(); removeConsentPage(${i})">✕</div>
+                </div>
+            `).join('');
+            html += `
+                <div class="consent-add-btn" onclick="triggerConsentUpload()">
+                    <span>+</span>
+                    <span>添加</span>
+                </div>
+            `;
+            container.innerHTML = html;
+        }
+
+        function removeConsentPage(index) {
+            consentPages.splice(index, 1);
+            if (consentPages.length === 0) {
+                document.getElementById('consentMultiArea').style.display = 'none';
+                document.getElementById('card-consent').classList.remove('uploaded');
+                document.getElementById('consent-hint').innerText = '必传 · 支持多页';
+                delete uploadedTypes['consent'];
+            }
+            renderConsentPages();
+        }
 
         function runOCR(type) {
             // 显示识别动画
@@ -359,8 +471,8 @@
                 showWxAuth();
                 return;
             }
-            if (!uploadedTypes['consent']) {
-                alert('请上传知情同意书');
+            if (consentPages.length === 0) {
+                alert('请上传知情同意书（至少 1 页）');
                 return;
             }
 
@@ -377,9 +489,10 @@
                 medication: document.getElementById('r-medication').value,
                 ocrIdCard: !!uploadedTypes['idcard'],
                 ocrDiagnosis: !!uploadedTypes['diagnosis'],
-                ocrConsent: !!uploadedTypes['consent'],
+                ocrConsent: consentPages.length > 0,
                 ocrPrescription: !!uploadedTypes['prescription'],
-                consentPhoto: uploadedTypes['consent'],
+                consentPhoto: consentPages[0],
+                consentPages: consentPages.length,
                 consentStatus: 'active',
                 consentDate: App.formatDate(new Date()),
                 isRegistered: true,
