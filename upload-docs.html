@@ -70,6 +70,57 @@
         }
 
         .required-mark { color: var(--danger-color); margin-right: 2px; }
+
+        /* 微信授权弹窗 */
+        .wx-overlay {
+            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5); z-index: 9999;
+            justify-content: center; align-items: flex-end;
+        }
+        .wx-overlay.active { display: flex; }
+        .wx-auth-panel {
+            width: 100%; max-width: 500px; background: white;
+            border-radius: 24px 24px 0 0; padding: 32px 24px calc(24px + env(safe-area-inset-bottom));
+            animation: wxSlideUp 0.3s ease-out;
+        }
+        @keyframes wxSlideUp {
+            from { transform: translateY(100%); }
+            to { transform: translateY(0); }
+        }
+        .wx-auth-icon {
+            width: 56px; height: 56px; border-radius: 16px;
+            background: linear-gradient(135deg, #07C160, #06AD56); margin: 0 auto 16px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px; color: white;
+        }
+        .wx-auth-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+        .wx-auth-desc { font-size: 13px; color: var(--text-secondary); text-align: center; margin-bottom: 6px; }
+        .wx-auth-phone {
+            font-size: 24px; font-weight: 800; text-align: center; letter-spacing: 2px;
+            margin: 16px 0 24px; color: var(--text-main);
+        }
+        .wx-btn-allow {
+            width: 100%; height: 48px; border-radius: 24px; border: none;
+            background: #07C160; color: white; font-size: 16px; font-weight: 600;
+            cursor: pointer; margin-bottom: 12px;
+        }
+        .wx-btn-deny {
+            width: 100%; height: 44px; border-radius: 22px; border: none;
+            background: transparent; color: var(--text-muted); font-size: 14px; cursor: pointer;
+        }
+
+        /* 手机号授权按钮样式 */
+        .phone-auth-btn {
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            padding: 10px 16px; border-radius: 12px; border: 1.5px dashed rgba(7, 193, 96, 0.3);
+            background: rgba(7, 193, 96, 0.05); cursor: pointer; transition: all 0.2s;
+            font-size: 13px; font-weight: 600; color: #07C160;
+        }
+        .phone-auth-btn:active { transform: scale(0.97); background: rgba(7, 193, 96, 0.1); }
+        .phone-auth-btn.authorized {
+            border-style: solid; border-color: var(--success-color);
+            background: #F0FFF4; color: var(--text-main); font-weight: 700;
+        }
     </style>
 </head>
 <body>
@@ -180,7 +231,26 @@
                 </div>
                 <div class="result-field">
                     <span class="result-label"><span class="required-mark">*</span>手机号</span>
-                    <input type="tel" class="result-value" id="r-phone" value="" placeholder="请手动输入" maxlength="11" style="color: var(--primary-color);">
+                    <input type="tel" class="result-value" id="r-phone" value="" readonly placeholder="点击右侧授权" maxlength="11">
+                </div>
+                <div style="padding: 8px 0 12px;">
+                    <div class="phone-auth-btn" id="phoneAuthBtn" onclick="showWxAuth()">
+                        <span style="font-size: 18px;">📱</span>
+                        <span>微信一键授权获取手机号</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 微信授权弹窗 -->
+            <div class="wx-overlay" id="wxOverlay" onclick="closeWxAuth(event)">
+                <div class="wx-auth-panel" onclick="event.stopPropagation()">
+                    <div class="wx-auth-icon">📱</div>
+                    <div class="wx-auth-title">获取你的手机号</div>
+                    <div class="wx-auth-desc">君实生物患者管理申请获取你的手机号</div>
+                    <div class="wx-auth-desc" style="font-size: 11px; color: var(--text-muted);">获取你绑定的手机号，方便接收项目通知</div>
+                    <div class="wx-auth-phone" id="wxPhoneDisplay">138****6789</div>
+                    <button class="wx-btn-allow" onclick="confirmWxAuth()">允许</button>
+                    <button class="wx-btn-deny" onclick="closeWxAuth()">拒绝</button>
                 </div>
             </div>
 
@@ -248,6 +318,32 @@
             }, 1500);
         }
 
+        // 微信授权获取手机号
+        const mockPhone = '13812346789';
+        let phoneAuthorized = false;
+
+        function showWxAuth() {
+            if (phoneAuthorized) return;
+            document.getElementById('wxOverlay').classList.add('active');
+            // 显示脱敏手机号
+            document.getElementById('wxPhoneDisplay').innerText = mockPhone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2');
+        }
+
+        function closeWxAuth(e) {
+            document.getElementById('wxOverlay').classList.remove('active');
+        }
+
+        function confirmWxAuth() {
+            phoneAuthorized = true;
+            document.getElementById('r-phone').value = mockPhone;
+            document.getElementById('wxOverlay').classList.remove('active');
+            // 更新按钮状态
+            const btn = document.getElementById('phoneAuthBtn');
+            btn.classList.add('authorized');
+            btn.innerHTML = '<span style="font-size: 16px;">✅</span><span>已授权：' + mockPhone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') + '</span>';
+            btn.onclick = null;
+        }
+
         function handleSubmit() {
             const name = document.getElementById('r-name').value;
             const idCard = document.getElementById('r-idcard').value;
@@ -258,9 +354,9 @@
                 alert('请确保姓名、身份证号和确诊疾病已填写');
                 return;
             }
-            if (!phone || !/^1\d{10}$/.test(phone)) {
-                alert('请输入正确的手机号码');
-                document.getElementById('r-phone').focus();
+            if (!phone) {
+                alert('请先授权获取手机号');
+                showWxAuth();
                 return;
             }
             if (!uploadedTypes['consent']) {
