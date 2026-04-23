@@ -55,11 +55,36 @@
             background: var(--primary-gradient); border-radius: 3px; transition: width 1s ease-in-out;
         }
 
+        /* 修复教育 Tab 滚动逻辑 */
+        #tab-education {
+            height: calc(100vh - 64px - var(--safe-area-bottom));
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #tab-education .container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            padding-bottom: 0;
+            padding-top: 10px;
+        }
+        #educationList {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+            /* 隐藏滚动条但保留功能 */
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #educationList::-webkit-scrollbar { display: none; }
+
         /* 教育分类标签栏 */
         .edu-tabs {
             display: flex; gap: 0; background: white; border-radius: 16px;
-            padding: 4px; margin-bottom: 20px; box-shadow: var(--shadow-sm);
-            border: 1px solid #F0F2F5; overflow-x: auto;
+            padding: 4px; margin-bottom: 16px; box-shadow: var(--shadow-sm);
+            border: 1px solid #F0F2F5; overflow-x: auto; flex-shrink: 0;
             scrollbar-width: none; -ms-overflow-style: none;
         }
         .edu-tabs::-webkit-scrollbar { display: none; }
@@ -100,6 +125,29 @@
         .edu-type-tag.tag-replay { background: #FFF2E6; color: #E37318; }
         .edu-type-tag.tag-video { background: #F3E8FF; color: #7C3AED; }
         .edu-item-arrow { color: var(--text-muted); font-size: 14px; flex-shrink: 0; opacity: 0.4; }
+        /* 消息 Tab 滚动逻辑 */
+        #tab-message {
+            height: calc(100vh - 64px - var(--safe-area-bottom));
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        #tab-message .container {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 20px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        #tab-message .container::-webkit-scrollbar { display: none; }
+
+        /* 咨询 Tab 滚动逻辑 (清理内联样式) */
+        #tab-consult {
+            height: calc(100vh - 64px - var(--safe-area-bottom));
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
     </style>
 </head>
 <body>
@@ -203,7 +251,7 @@
         </section>
 
         <!-- Tab 3: 咨询 -->
-        <section id="tab-consult" class="tab-content hidden" style="position: relative; height: calc(100vh - 64px - var(--safe-area-bottom));">
+        <section id="tab-consult" class="tab-content hidden" style="position: relative;">
             <div class="header"><h1>医疗顾问</h1></div>
             <div style="height: calc(100% - 60px); overflow-y: auto; padding: 10px 20px 100px; display: flex; flex-direction: column;" id="chatList">
                 <div style="align-self: center; font-size: 11px; color: var(--text-muted); margin: 10px 0;">上午 10:24</div>
