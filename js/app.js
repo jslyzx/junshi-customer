@@ -84,8 +84,8 @@ const App = {
 // 模拟数据
 const MockData = {
     doctors: [
-        { id: 'D001', name: '王医生', hospital: '君实附属第一医院', dept: '肿瘤科', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
-        { id: 'D002', name: '李主任', hospital: '君实附属第一医院', dept: '免疫科', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aria' }
+        { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix' },
+        { id: 'D002', name: '张伟', hospital: '复旦大学附属肿瘤医院', dept: '免疫科', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Aria' }
     ],
     educationList: [
         // 疾病知识
@@ -99,9 +99,9 @@ const MockData = {
         { id: 7, title: '放疗后皮肤管理与日常防护', category: '健康资讯', type: '图文', date: '2024-04-01', readCount: 980, icon: '💡' },
         { id: 8, title: '运动康复：适合肿瘤患者的锻炼方式', category: '健康资讯', type: '图文', date: '2024-03-25', readCount: 1230, icon: '💡' },
         // 专家讲座
-        { id: 9, title: '王医生：免疫联合治疗的最新进展', category: '专家讲座', type: '回放', date: '2024-04-14', readCount: 5600, icon: '🎓', duration: '45 min' },
-        { id: 10, title: '李主任：ADC 药物的临床应用与展望', category: '专家讲座', type: '回放', date: '2024-04-07', readCount: 3200, icon: '🎓', duration: '38 min' },
-        { id: 11, title: '张教授：肿瘤患者心理调适与支持', category: '专家讲座', type: '回放', date: '2024-03-30', readCount: 2100, icon: '🎓', duration: '52 min' },
+        { id: 9, title: '王晓雅：免疫联合治疗的最新进展', category: '专家讲座', type: '回放', date: '2024-04-14', readCount: 5600, icon: '🎓', duration: '45 min' },
+        { id: 10, title: '张伟：ADC 药物的临床应用与展望', category: '专家讲座', type: '回放', date: '2024-04-07', readCount: 3200, icon: '🎓', duration: '38 min' },
+        { id: 11, title: '李四：肿瘤患者心理调适与支持', category: '专家讲座', type: '回放', date: '2024-03-30', readCount: 2100, icon: '🎓', duration: '52 min' },
         // 视频教育
         { id: 12, title: '输液港日常维护操作演示', category: '视频教育', type: '视频', date: '2024-04-11', readCount: 4300, icon: '🎬', duration: '8 min' },
         { id: 13, title: '居家自我注射操作指南', category: '视频教育', type: '视频', date: '2024-04-06', readCount: 2900, icon: '🎬', duration: '12 min' },
