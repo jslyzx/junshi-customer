@@ -62,8 +62,17 @@
         .result-value {
             flex: 1; border: none; background: transparent; font-size: 15px;
             font-weight: 600; color: var(--text-main); outline: none; text-align: right;
+            width: 100%;
         }
         .result-value:focus { color: var(--primary-color); }
+        .result-auth-link {
+            font-size: 13px; color: #07C160; font-weight: 600; margin-left: 12px;
+            padding: 4px 8px; background: rgba(7, 193, 96, 0.05); border-radius: 6px;
+            cursor: pointer; white-space: nowrap;
+        }
+        .result-auth-link.authorized {
+            display: none;
+        }
         .result-tag {
             font-size: 10px; background: var(--primary-soft); color: var(--primary-color);
             padding: 2px 6px; border-radius: 4px; margin-left: 8px; white-space: nowrap;
@@ -108,6 +117,16 @@
             width: 100%; height: 44px; border-radius: 22px; border: none;
             background: transparent; color: var(--text-muted); font-size: 14px; cursor: pointer;
         }
+        .wx-user-info {
+            display: flex; align-items: center; gap: 12px; padding: 16px 0;
+            border-bottom: 0.5px solid rgba(0,0,0,0.05); margin-bottom: 8px;
+        }
+        .wx-avatar { width: 44px; height: 44px; border-radius: 8px; background: #eee; }
+        .wx-nickname { font-size: 15px; font-weight: 600; color: var(--text-main); }
+        .wx-auth-phone-row {
+            display: flex; align-items: center; justify-content: space-between; padding: 16px 0;
+        }
+        .wx-check-icon { color: #07C160; font-size: 20px; }
 
         /* 手机号授权按钮样式 */
         .phone-auth-btn {
@@ -219,12 +238,19 @@
         <div id="uploadSection">
             <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px;">上传材料</div>
             <div class="doc-grid">
-                <div class="doc-upload-card" id="card-idcard" onclick="triggerUpload('idcard')">
+                <div class="doc-upload-card" id="card-idcard-front" onclick="triggerUpload('idcard-front')">
                     <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证正面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-idcard" onclick="event.stopPropagation(); openViewer(this.src)">
+                    <img class="doc-thumb" id="thumb-idcard-front" onclick="event.stopPropagation(); openViewer(this.src)">
+                </div>
+                <div class="doc-upload-card" id="card-idcard-back" onclick="triggerUpload('idcard-back')">
+                    <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
+                    <div class="doc-name">身份证反面</div>
+                    <div class="doc-hint">必传 · 拍照上传</div>
+                    <div class="doc-check">✓</div>
+                    <img class="doc-thumb" id="thumb-idcard-back" onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-diagnosis" onclick="triggerUpload('diagnosis')">
                     <div class="doc-icon" style="background: #FFF2E6;">📋</div>
@@ -240,30 +266,10 @@
                     <div class="doc-check">✓</div>
                     <img class="doc-thumb" id="thumb-prescription" onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
-                <div class="doc-upload-card" id="card-consent" onclick="triggerConsentUpload()">
-                    <div class="doc-icon" style="background: #F3E8FF;">🖋️</div>
-                    <div class="doc-name">知情同意书</div>
-                    <div class="doc-hint" id="consent-hint">必传 · 支持多页</div>
-                    <div class="doc-check">✓</div>
-                    <img class="doc-thumb" style="display:none">
-                </div>
             </div>
             <input type="file" id="fileInput" hidden accept="image/*" capture="environment">
-            <input type="file" id="consentFileInput" hidden accept="image/*" capture="environment">
 
-            <!-- 知情同意书多页上传区 -->
-            <div class="consent-multi-area" id="consentMultiArea" style="display: none;">
-                <div class="consent-header">
-                    <span class="consent-header-title">🖋️ 知情同意书</span>
-                    <span class="consent-count" id="consentCount">已上传 0 页</span>
-                </div>
-                <div class="consent-pages" id="consentPages">
-                    <div class="consent-add-btn" onclick="triggerConsentUpload()">
-                        <span>+</span>
-                        <span>添加</span>
-                    </div>
-                </div>
-            </div>
+
         </div>
 
         <!-- OCR 识别中 -->
@@ -318,28 +324,37 @@
                     <span class="result-label">用药方案</span>
                     <input type="text" class="result-value" id="r-medication" value="" placeholder="选传后识别">
                 </div>
-                <div class="result-field">
+                <div class="result-field" onclick="showWxAuth()">
                     <span class="result-label"><span class="required-mark">*</span>手机号</span>
-                    <input type="tel" class="result-value" id="r-phone" value="" readonly placeholder="点击右侧授权" maxlength="11">
-                </div>
-                <div style="padding: 8px 0 12px;">
-                    <div class="phone-auth-btn" id="phoneAuthBtn" onclick="showWxAuth()">
-                        <span style="font-size: 18px;">📱</span>
-                        <span>微信一键授权获取手机号</span>
-                    </div>
+                    <input type="tel" class="result-value" id="r-phone" value="" readonly maxlength="11" style="padding-right:0">
+                    <span class="result-auth-link" id="phoneAuthBtn">点击授权</span>
                 </div>
             </div>
 
             <!-- 微信授权弹窗 -->
             <div class="wx-overlay" id="wxOverlay" onclick="closeWxAuth(event)">
                 <div class="wx-auth-panel" onclick="event.stopPropagation()">
-                    <div class="wx-auth-icon">📱</div>
-                    <div class="wx-auth-title">获取你的手机号</div>
-                    <div class="wx-auth-desc">君实生物患者管理申请获取你的手机号</div>
-                    <div class="wx-auth-desc" style="font-size: 11px; color: var(--text-muted);">获取你绑定的手机号，方便接收项目通知</div>
-                    <div class="wx-auth-phone" id="wxPhoneDisplay">138****6789</div>
-                    <button class="wx-btn-allow" onclick="confirmWxAuth()">允许</button>
-                    <button class="wx-btn-deny" onclick="closeWxAuth()">拒绝</button>
+                    <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
+                        <img src="https://res.wx.qq.com/a/static/ad_p_center/ad_p_center/image/common/logo_wechat.png" style="width: 20px; height: 20px;">
+                        <span style="font-size: 14px; font-weight: 500; color: #576b95;">微信授权</span>
+                    </div>
+                    <div class="wx-auth-title" style="text-align: left; font-size: 17px;">申请获取你的手机号</div>
+                    <div class="wx-auth-desc" style="text-align: left; margin-top: 4px; margin-bottom: 20px;">用于同步项目进度及随访通知</div>
+                    
+                    <div class="wx-user-info">
+                        <img class="wx-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix">
+                        <div class="wx-nickname">微信用户</div>
+                    </div>
+
+                    <div class="wx-auth-phone-row">
+                        <span style="font-size: 16px; font-weight: 500;" id="wxPhoneDisplay">138****6789</span>
+                        <span class="wx-check-icon">✔</span>
+                    </div>
+
+                    <div style="display: flex; gap: 12px; margin-top: 32px;">
+                        <button class="btn" style="background: #F2F2F2; color: #07C160; width: 40%;" onclick="closeWxAuth()">拒绝</button>
+                        <button class="btn" style="background: #07C160; color: white; flex: 1;" onclick="confirmWxAuth()">允许</button>
+                    </div>
                 </div>
             </div>
 
@@ -367,18 +382,8 @@
         let currentUploadType = '';
         const uploadedTypes = {};
         const ocrData = {};
-        const consentPages = []; // 知情同意书多页数组
 
-        // 初始化：同步已上传的知情同意书
-        if (patient.consentPhotos && patient.consentPhotos.length > 0) {
-            patient.consentPhotos.forEach(p => consentPages.push(p));
-            setTimeout(() => {
-                renderConsentPages();
-                const card = document.getElementById('card-consent');
-                card.classList.add('uploaded');
-                document.getElementById('consent-hint').innerText = `已同步 ${consentPages.length} 页`;
-            }, 100);
-        }
+
 
         // 初始化：填充手机号
         if (patient.phone) {
@@ -396,10 +401,6 @@
             document.getElementById('fileInput').click();
         }
 
-        function triggerConsentUpload() {
-            document.getElementById('consentFileInput').click();
-        }
-
         // 普通材料上传
         document.getElementById('fileInput').addEventListener('change', function() {
             if (!this.files[0]) return;
@@ -411,61 +412,17 @@
                 card.querySelector('.doc-hint').innerText = '已上传 ✓';
                 document.getElementById('thumb-' + currentUploadType).src = dataUrl;
                 uploadedTypes[currentUploadType] = dataUrl;
-                runOCR(currentUploadType);
+                
+                // 身份证正面、诊断证明、处方单均触发 OCR
+                if (currentUploadType === 'idcard-front' || currentUploadType === 'diagnosis' || currentUploadType === 'prescription') {
+                    runOCR(currentUploadType);
+                }
             };
             reader.readAsDataURL(this.files[0]);
             this.value = '';
         });
 
-        // 知情同意书多页上传
-        document.getElementById('consentFileInput').addEventListener('change', function() {
-            if (!this.files[0]) return;
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                consentPages.push(e.target.result);
-                renderConsentPages();
-                // 标记卡片已上传
-                const card = document.getElementById('card-consent');
-                card.classList.add('uploaded');
-                document.getElementById('consent-hint').innerText = `已上传 ${consentPages.length} 页`;
-                uploadedTypes['consent'] = true;
-            };
-            reader.readAsDataURL(this.files[0]);
-            this.value = '';
-        });
 
-        function renderConsentPages() {
-            const container = document.getElementById('consentPages');
-            const area = document.getElementById('consentMultiArea');
-            area.style.display = 'block';
-            document.getElementById('consentCount').innerText = `已上传 ${consentPages.length} 页`;
-
-            let html = consentPages.map((src, i) => `
-                <div class="consent-page-item" onclick="openViewer(consentPages, ${i})">
-                    <img src="${src}">
-                    <div class="consent-page-num">第 ${i + 1} 页</div>
-                    <div class="consent-page-del" onclick="event.stopPropagation(); removeConsentPage(${i})">✕</div>
-                </div>
-            `).join('');
-            html += `
-                <div class="consent-add-btn" onclick="triggerConsentUpload()">
-                    <span>+</span>
-                    <span>添加</span>
-                </div>
-            `;
-            container.innerHTML = html;
-        }
-
-        function removeConsentPage(index) {
-            consentPages.splice(index, 1);
-            if (consentPages.length === 0) {
-                document.getElementById('consentMultiArea').style.display = 'none';
-                document.getElementById('card-consent').classList.remove('uploaded');
-                document.getElementById('consent-hint').innerText = '必传 · 支持多页';
-                delete uploadedTypes['consent'];
-            }
-            renderConsentPages();
-        }
 
         function runOCR(type) {
             // 显示识别动画
@@ -473,7 +430,7 @@
 
             setTimeout(() => {
                 // 模拟 OCR 结果
-                const result = App.simulateOCR(type);
+                const result = App.simulateOCR(type === 'idcard-front' ? 'idcard' : type);
                 Object.assign(ocrData, result);
 
                 // 填充识别结果
@@ -511,11 +468,9 @@
             phoneAuthorized = true;
             document.getElementById('r-phone').value = mockPhone;
             document.getElementById('wxOverlay').classList.remove('active');
-            // 更新按钮状态
+            // 更新按钮状态，隐藏授权链接
             const btn = document.getElementById('phoneAuthBtn');
             btn.classList.add('authorized');
-            btn.innerHTML = '<span style="font-size: 16px;">✅</span><span>已授权：' + mockPhone.replace(/(\d{3})\d{4}(\d{4})/, '$1****$2') + '</span>';
-            btn.onclick = null;
         }
 
         function handleSubmit() {
@@ -533,8 +488,10 @@
                 showWxAuth();
                 return;
             }
-            if (consentPages.length === 0) {
-                alert('请上传知情同意书（至少 1 页）');
+            if (uploadedTypes['idcard-front'] && uploadedTypes['idcard-back'] && uploadedTypes['diagnosis']) {
+                // 校验通过
+            } else {
+                alert('请上传身份证正反面及诊断证明');
                 return;
             }
 
@@ -549,15 +506,10 @@
                 stage: document.getElementById('r-stage').value,
                 hospital: document.getElementById('r-hospital').value,
                 medication: document.getElementById('r-medication').value,
-                ocrIdCard: !!uploadedTypes['idcard'],
+                ocrIdCard: !!uploadedTypes['idcard-front'],
+                ocrIdCardBack: !!uploadedTypes['idcard-back'],
                 ocrDiagnosis: !!uploadedTypes['diagnosis'],
-                ocrConsent: consentPages.length > 0,
                 ocrPrescription: !!uploadedTypes['prescription'],
-                consentPhoto: consentPages[0],
-                consentPages: consentPages.length,
-                consentPhotos: consentPages, // 保存完整图片数组
-                consentStatus: 'active',
-                consentDate: App.formatDate(new Date()),
                 isRegistered: true,
                 hasProfile: true
             });

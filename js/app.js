@@ -74,9 +74,10 @@ const App = {
         return {
             isBound: !!info.isBound,
             hasIdCard: !!info.ocrIdCard,
+            hasIdCardBack: !!info.ocrIdCardBack,
             hasDiagnosis: !!info.ocrDiagnosis,
             hasConsent: !!info.ocrConsent,
-            isComplete: !!info.ocrIdCard && !!info.ocrDiagnosis && !!info.ocrConsent
+            isComplete: !!info.ocrIdCard && !!info.ocrIdCardBack && !!info.ocrDiagnosis && !!info.ocrConsent
         };
     }
 };

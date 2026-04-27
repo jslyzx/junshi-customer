@@ -314,10 +314,11 @@
             App.savePatientInfo({
                 consentPhotos: uploadPages,
                 consentStatus: 'active',
+                ocrConsent: true, // 记录已上传状态
                 consentDate: App.formatDate(new Date())
             });
-            alert('入组资料已提交，请等待审核');
-            window.location.reload();
+            alert('知情同意书已提交，请等待审核');
+            App.navigateTo('index.html');
         }
 
         // 预览放大逻辑

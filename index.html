@@ -29,21 +29,22 @@
 
         /* 待办任务卡片 */
         .task-card-action {
-            display: flex; align-items: center; gap: 16px; padding: 20px;
+            display: flex; flex-direction: row !important; align-items: center; gap: 16px; padding: 20px;
             background: white; border-radius: 20px; margin-bottom: 14px;
             border: 1px solid #F0F2F5; cursor: pointer; transition: all 0.2s;
-            box-shadow: var(--shadow-sm);
+            box-shadow: var(--shadow-sm); text-align: left;
+            position: relative; z-index: 1; overflow: hidden;
         }
         .task-card-action:active { transform: scale(0.98); background: #FAFBFC; }
         .task-card-action.completed {
-            opacity: 0.6; background: #F9FFF9;
+            background: #F0FFF4;
             border-color: rgba(52, 199, 89, 0.2);
         }
         .task-icon-lg {
             width: 48px; height: 48px; border-radius: 14px;
             display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0;
         }
-        .task-card-action .task-arrow { color: var(--text-muted); font-size: 18px; }
+        .task-card-action .task-arrow { color: var(--text-muted); font-size: 18px; margin-left: auto; }
         .task-card-action.completed .task-arrow { display: none; }
 
         /* 进度条 */
@@ -203,11 +204,19 @@
                 <!-- 待完成任务区（未建档时显示） -->
                 <div id="todoSection">
                     <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin: 24px 0 12px 4px; letter-spacing: 1px;">待完成</div>
+                    <div class="task-card-action" id="taskConsent" onclick="App.navigateTo('consent.html')">
+                        <div class="task-icon-lg" style="background: #F3E8FF;" id="taskConsentIcon">🖋️</div>
+                        <div style="flex: 1;">
+                            <div style="font-size: 15px; font-weight: 700;" id="taskConsentTitle">签署并上传知情同意书</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;" id="taskConsentSub">入组前需完成知情签署</div>
+                        </div>
+                        <span class="task-arrow">›</span>
+                    </div>
                     <div class="task-card-action" id="taskUploadDocs" onclick="App.navigateTo('upload-docs.html')">
                         <div class="task-icon-lg" style="background: #E6F0FF;">📋</div>
                         <div style="flex: 1;">
-                            <div style="font-size: 15px; font-weight: 700;">上传入组资料</div>
-                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">身份证 · 诊断证明 · 知情同意书</div>
+                            <div style="font-size: 15px; font-weight: 700;">完善个人信息</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); margin-top: 2px;">身份证 · 诊断证明 · 处方单</div>
                         </div>
                         <span class="task-arrow">›</span>
                     </div>
@@ -338,6 +347,16 @@
                 </div>
 
                 <div class="card" style="padding: 10px 0;">
+                    <div class="list-item" style="padding: 18px 24px;" onclick="location.href='satisfaction.html'">
+                        <div style="display:flex; align-items:center; gap: 15px;">
+                            <span style="font-size: 18px; color: #FF9500;">⭐</span>
+                            <span style="font-weight: 500;">服务评价</span>
+                        </div>
+                        <span style="color: var(--text-muted);">›</span>
+                    </div>
+                </div>
+
+                <div class="card" style="padding: 10px 0;">
                     <div class="list-item" style="padding: 18px 24px;" onclick="App.navigateTo('settings.html')">
                         <div style="display:flex; align-items:center; gap: 15px;">
                             <span style="font-size: 20px;">⚙️</span>
@@ -400,36 +419,45 @@
                 document.getElementById('homeWelcomeSub').innerText = '完成入组资料上传，开启管理服务';
             }
 
-            // 医生信息显隐切换
-            if (patient.boundDoctor) {
-                document.getElementById('doctorCard').style.display = 'flex';
-                document.getElementById('bindDoctorPrompt').style.display = 'none';
-                document.getElementById('homeDocAvatar').src = patient.boundDoctor.avatar;
-                document.getElementById('homeDocName').innerText = patient.boundDoctor.name + ' 主任医师';
-                document.getElementById('homeDocInfo').innerText = `${patient.boundDoctor.hospital} | ${patient.boundDoctor.dept}`;
-            } else {
-                document.getElementById('doctorCard').style.display = 'none';
-                document.getElementById('bindDoctorPrompt').style.display = 'flex';
-            }
-
-            // 根据建档状态切换显示
-            if (status.isComplete) {
-                document.getElementById('todoSection').classList.add('hidden');
-                document.getElementById('progressSection').classList.remove('hidden');
-            } else {
-                document.getElementById('todoSection').classList.remove('hidden');
-                document.getElementById('progressSection').classList.add('hidden');
-
-                // 如果已完成上传，标记任务卡片
-                if (status.hasIdCard && status.hasDiagnosis && status.hasConsent) {
-                    const taskCard = document.getElementById('taskUploadDocs');
-                    taskCard.classList.add('completed');
-                    taskCard.querySelector('.task-icon-lg').style.background = '#E8F8E8';
-                    taskCard.querySelector('.task-icon-lg').innerText = '✅';
-                    taskCard.querySelector('div > div:first-child').innerText = '入组资料已提交';
-                    taskCard.onclick = null;
+                // 医生信息显隐切换
+                if (patient.boundDoctor) {
+                    document.getElementById('doctorCard').style.display = 'flex';
+                    document.getElementById('bindDoctorPrompt').style.display = 'none';
+                    document.getElementById('homeDocAvatar').src = patient.boundDoctor.avatar;
+                    document.getElementById('homeDocName').innerText = patient.boundDoctor.name + ' 主任医师';
+                    document.getElementById('homeDocInfo').innerText = `${patient.boundDoctor.hospital} | ${patient.boundDoctor.dept}`;
+                } else {
+                    document.getElementById('doctorCard').style.display = 'none';
+                    document.getElementById('bindDoctorPrompt').style.display = 'flex';
                 }
-            }
+
+                // 根据建档状态切换显示
+                if (status.isComplete) {
+                    document.getElementById('todoSection').classList.add('hidden');
+                    document.getElementById('progressSection').classList.remove('hidden');
+                } else {
+                    document.getElementById('todoSection').classList.remove('hidden');
+                    document.getElementById('progressSection').classList.add('hidden');
+
+                    // 检查知情同意书状态
+                    if (status.hasConsent) {
+                        const consentCard = document.getElementById('taskConsent');
+                        consentCard.classList.add('completed');
+                        document.getElementById('taskConsentIcon').innerText = '✅';
+                        document.getElementById('taskConsentTitle').innerText = '知情同意书已提交';
+                        consentCard.onclick = null;
+                    }
+
+                    // 检查资料完善状态
+                    if (status.hasIdCard && status.hasIdCardBack && status.hasDiagnosis) {
+                        const taskCard = document.getElementById('taskUploadDocs');
+                        taskCard.classList.add('completed');
+                        taskCard.querySelector('.task-icon-lg').style.background = '#E8F8E8';
+                        taskCard.querySelector('.task-icon-lg').innerText = '✅';
+                        taskCard.querySelector('div > div:first-child').innerText = '个人信息已完善';
+                        taskCard.onclick = null;
+                    }
+                }
 
             // 我的 Tab
             document.getElementById('myUserName').innerText = patient.name || '未实名';

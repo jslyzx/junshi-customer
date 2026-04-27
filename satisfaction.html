@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>服务评价 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .satisfaction-card {
+            background: white; border-radius: 24px; padding: 30px 24px;
+            margin-top: 20px; box-shadow: var(--shadow-sm);
+        }
+        .rating-group { margin-bottom: 30px; }
+        .rating-label { font-size: 15px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; display: block; }
+        .stars-container { display: flex; gap: 15px; font-size: 32px; color: #E5E5EA; }
+        .star.active { color: #FF9500; }
+        
+        .textarea-box {
+            background: #F9FAFB; border-radius: 16px; padding: 16px; width: 100%;
+            border: 1px solid #F0F2F5; font-size: 14px; min-height: 120px;
+            margin-top: 10px; resize: none; box-sizing: border-box;
+        }
+        .textarea-box:focus { outline: none; border-color: var(--primary-color); background: white; }
+
+        .submit-btn {
+            background: var(--primary-gradient); color: white; border: none;
+            width: 100%; padding: 16px; border-radius: 16px; font-size: 16px;
+            font-weight: 700; margin-top: 30px; box-shadow: 0 8px 20px rgba(0, 122, 255, 0.3);
+        }
+        .submit-btn:active { transform: scale(0.98); opacity: 0.9; }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>服务评价</h1>
+    </div>
+
+    <div class="container animate-up">
+        <div style="padding: 10px 4px;">
+            <div style="font-size: 20px; font-weight: 800; color: var(--text-main);">您的评价很重要</div>
+            <div style="font-size: 13px; color: var(--text-muted); margin-top: 4px;">我们一直在努力为您提供更专业的服务</div>
+        </div>
+
+        <div class="satisfaction-card">
+            <div class="rating-group">
+                <span class="rating-label">项目专员服务评价</span>
+                <div class="stars-container" id="specialistStars">
+                    <span class="star active" onclick="setRate('specialist', 1)">★</span>
+                    <span class="star active" onclick="setRate('specialist', 2)">★</span>
+                    <span class="star active" onclick="setRate('specialist', 3)">★</span>
+                    <span class="star active" onclick="setRate('specialist', 4)">★</span>
+                    <span class="star active" onclick="setRate('specialist', 5)">★</span>
+                    <span style="font-size: 14px; color: #FF9500; font-weight: 700; margin-left: 5px; align-self: center;" id="specialistScoreText">5.0分</span>
+                </div>
+            </div>
+
+            <div class="rating-group">
+                <span class="rating-label">随访中心服务评价</span>
+                <div class="stars-container" id="centerStars">
+                    <span class="star active" onclick="setRate('center', 1)">★</span>
+                    <span class="star active" onclick="setRate('center', 2)">★</span>
+                    <span class="star active" onclick="setRate('center', 3)">★</span>
+                    <span class="star active" onclick="setRate('center', 4)">★</span>
+                    <span class="star active" onclick="setRate('center', 5)">★</span>
+                    <span style="font-size: 14px; color: #FF9500; font-weight: 700; margin-left: 5px; align-self: center;" id="centerScoreText">5.0分</span>
+                </div>
+            </div>
+
+            <div class="rating-group" style="margin-bottom: 0;">
+                <span class="rating-label">更多建议（选填）</span>
+                <textarea class="textarea-box" placeholder="请输入您的宝贵意见或建议，帮助我们做得更好..."></textarea>
+            </div>
+        </div>
+
+        <button class="submit-btn" onclick="handleSubmit()">提交评价</button>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        const ratings = {
+            specialist: 5,
+            center: 5
+        };
+
+        function setRate(type, score) {
+            ratings[type] = score;
+            const container = document.getElementById(type + 'Stars');
+            const stars = container.querySelectorAll('.star');
+            stars.forEach((s, idx) => {
+                if (idx < score) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+            document.getElementById(type + 'ScoreText').innerText = score + '.0分';
+        }
+
+        function handleSubmit() {
+            // 简单反馈
+            const btn = document.querySelector('.submit-btn');
+            btn.innerText = '正在提交...';
+            btn.disabled = true;
+            
+            setTimeout(() => {
+                alert('评价提交成功，感谢您的反馈！');
+                history.back();
+            }, 1000);
+        }
+    </script>
+</body>
+</html>
