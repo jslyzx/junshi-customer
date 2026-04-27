@@ -60,8 +60,8 @@ const App = {
     simulateOCR(type) {
         const results = {
             idcard: { name: '林建国', idCard: '310115199203151234', gender: '男', birthDate: '1992-03-15' },
-            diagnosis: { disease: '非小细胞肺癌 (NSCLC)', stage: 'III期', hospital: '上海交通大学附属瑞金医院' },
-            prescription: { medication: 'PD-1 单抗 + 顺铂', dosage: '200mg Q3W', prescDate: '2024-04-10' },
+            diagnosis: { disease: '非小细胞肺癌', stage: 'III期', hospital: '上海交通大学附属瑞金医院' },
+            prescription: { medication: 'PD-1 单抗', dosage: '', prescDate: '2024-04-10' },
             consent: { signDate: App.formatDate(new Date()), status: '已签署' }
         };
         return results[type] || {};
