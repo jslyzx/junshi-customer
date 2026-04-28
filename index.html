@@ -164,6 +164,31 @@
             white-space: nowrap; pointer-events: none; opacity: 0; transition: 0.3s;
         }
         .float-contact:hover .float-contact-label { opacity: 1; }
+
+        /* 首页计划清单样式 */
+        .plan-list-card {
+            background: white; border-radius: 24px; padding: 20px;
+            margin-top: 20px; border: 1px solid #F0F2F5; box-shadow: var(--shadow-sm);
+        }
+        .plan-list-item {
+            display: flex; align-items: center; gap: 14px; padding: 12px 0;
+            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+        }
+        .plan-list-item:last-child { border-bottom: none; }
+        .plan-list-icon {
+            width: 40px; height: 40px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 20px;
+        }
+        .plan-list-info { flex: 1; min-width: 0; }
+        .plan-list-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .plan-list-desc { font-size: 11px; color: var(--text-secondary); margin-top: 2px; }
+        .plan-list-countdown {
+            padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700;
+            background: rgba(0, 122, 255, 0.1); color: var(--primary-color);
+        }
+        .plan-list-countdown.urgent {
+            background: rgba(255, 59, 48, 0.1); color: #FF3B30;
+        }
     </style>
 </head>
 <body>
@@ -263,6 +288,17 @@
                                 <div style="font-size: 12px; color: var(--text-secondary);">您的资料已提交审核，专属专员将在1个工作日内完成确认。</div>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <!-- 随访计划清单（有计划时显示） -->
+                <div id="planSection" class="hidden">
+                    <div style="display: flex; align-items: center; justify-content: space-between; margin: 24px 4px 12px;">
+                        <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px;">管理计划清单</div>
+                        <div style="font-size: 12px; color: var(--primary-color); font-weight: 600; cursor: pointer;" onclick="App.navigateTo('plans.html')">全部计划 ›</div>
+                    </div>
+                    <div class="plan-list-card animate-up" id="planListContainer">
+                        <!-- 动态渲染 -->
                     </div>
                 </div>
             </div>
@@ -452,9 +488,16 @@
                     if (status.hasIdCard && status.hasIdCardBack && status.hasDiagnosis) {
                         const taskCard = document.getElementById('taskUploadDocs');
                         taskCard.classList.add('completed');
-                        taskCard.querySelector('.task-icon-lg').style.background = '#E8F8E8';
-                        taskCard.querySelector('.task-icon-lg').innerText = '✅';
-                        taskCard.querySelector('div > div:first-child').innerText = '个人信息已完善';
+                        // 使用更精确的选择器避免样式错乱
+                        const icon = taskCard.querySelector('.task-icon-lg');
+                        const title = taskCard.querySelector('div[style*="flex: 1"] div:first-child');
+                        if (icon) {
+                            icon.style.background = '#E8F8E8';
+                            icon.innerText = '✅';
+                        }
+                        if (title) {
+                            title.innerText = '个人信息已完善';
+                        }
                         taskCard.onclick = null;
                     }
                 }
@@ -471,8 +514,42 @@
                 consentText.innerText = '待上传';
             }
 
+            renderPlanList();
             renderEducation();
             renderMessages();
+        }
+
+        function renderPlanList() {
+            const plan = App.getFollowUpPlan();
+            const section = document.getElementById('planSection');
+            const container = document.getElementById('planListContainer');
+            
+            if (!plan || !plan.tasks || plan.tasks.length === 0) {
+                section.classList.add('hidden');
+                return;
+            }
+            
+            section.classList.remove('hidden');
+            const today = new Date().setHours(0,0,0,0);
+            
+            container.innerHTML = plan.tasks.map(task => {
+                const targetDate = new Date(task.date).setHours(0,0,0,0);
+                const diffDays = Math.ceil((targetDate - today) / (1000 * 60 * 60 * 24));
+                const isUrgent = diffDays <= 3;
+                
+                return `
+                    <div class="plan-list-item">
+                        <div class="plan-list-icon" style="background: ${task.color}15; color: ${task.color}">${task.icon}</div>
+                        <div class="plan-list-info">
+                            <div class="plan-list-title">${task.title}</div>
+                            <div class="plan-list-desc">${task.desc}</div>
+                        </div>
+                        <div class="plan-list-countdown ${isUrgent ? 'urgent' : ''}">
+                            ${diffDays === 0 ? '今天' : '距离 ' + diffDays + ' 天'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
         }
 
         function switchTab(tab, event) {

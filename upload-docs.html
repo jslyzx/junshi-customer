@@ -214,6 +214,57 @@
             position: absolute; bottom: 40px; left: 0; right: 0; text-align: center;
             color: white; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
         }
+
+        /* 随访计划弹窗样式 */
+        .plan-modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6); z-index: 3000;
+            display: none; align-items: center; justify-content: center;
+            backdrop-filter: blur(5px);
+        }
+        .plan-modal-overlay.active { display: flex; }
+        
+        .plan-card {
+            width: 85%; max-width: 360px; background: white; border-radius: 32px;
+            overflow: hidden; animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes modalPop {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+
+        .plan-loading-content { padding: 40px 24px; text-align: center; }
+        .plan-loading-icon { width: 80px; height: 80px; margin: 0 auto 24px; }
+        .plan-progress-container {
+            width: 100%; height: 12px; background: #F0F2F5; border-radius: 6px;
+            margin: 20px 0; overflow: hidden; position: relative;
+        }
+        .plan-progress-bar {
+            width: 0%; height: 100%; background: var(--primary-gradient);
+            border-radius: 6px; transition: width 0.1s linear;
+        }
+        .plan-progress-text { font-size: 14px; font-weight: 700; color: var(--primary-color); }
+
+        .plan-result-header {
+            background: var(--primary-gradient); padding: 32px 24px; text-align: center; color: white;
+        }
+        .plan-result-body { padding: 24px; max-height: 400px; overflow-y: auto; }
+        .plan-task-item {
+            display: flex; gap: 14px; margin-bottom: 20px;
+        }
+        .plan-task-icon {
+            width: 40px; height: 40px; border-radius: 12px; display: flex;
+            align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+        }
+        .plan-task-info { flex: 1; }
+        .plan-task-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
+        .plan-task-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+        
+        .plan-edu-item {
+            padding: 12px; background: #F8FAFF; border-radius: 12px;
+            margin-top: 8px; font-size: 13px; color: var(--primary-color);
+            display: flex; align-items: center; gap: 8px;
+        }
     </style>
 </head>
 <body>
@@ -376,6 +427,40 @@
         <div id="viewerInfo" class="viewer-info">第 1 / 1 页</div>
     </div>
 
+    <!-- 随访计划加载弹窗 -->
+    <div id="planLoadingModal" class="plan-modal-overlay">
+        <div class="plan-card">
+            <div class="plan-loading-content">
+                <div class="plan-loading-icon">
+                    <img src="https://img.icons8.com/color/96/pill.png" style="width: 100%; height: 100%; object-fit: contain;">
+                </div>
+                <div style="font-size: 18px; font-weight: 800; color: var(--text-main);">提交成功</div>
+                <div style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">请稍后，正在为您定制专属学习计划</div>
+                <div class="plan-progress-container">
+                    <div id="planProgressBar" class="plan-progress-bar"></div>
+                </div>
+                <div id="planProgressPercent" class="plan-progress-text">0%</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 随访计划结果弹窗 -->
+    <div id="planResultModal" class="plan-modal-overlay">
+        <div class="plan-card">
+            <div class="plan-result-header">
+                <div style="font-size: 24px; margin-bottom: 8px;">✨</div>
+                <div style="font-size: 20px; font-weight: 800;">您的管理计划已生成</div>
+                <div style="font-size: 13px; opacity: 0.9; margin-top: 4px;">由 AI 根据您的用药方案智能定制</div>
+            </div>
+            <div class="plan-result-body" id="planTaskList">
+                <!-- 动态填充 -->
+            </div>
+            <div style="padding: 20px 24px;">
+                <button class="btn btn-primary" style="width: 100%;" onclick="App.navigateTo('index.html')">开启管理服务</button>
+            </div>
+        </div>
+    </div>
+
     <script src="js/app.js"></script>
     <script>
         const patient = App.getPatientInfo() || {};
@@ -514,8 +599,64 @@
                 hasProfile: true
             });
 
-            alert('建档成功！资料已提交审核');
-            App.navigateTo('index.html');
+            startPlanGeneration();
+        }
+
+        function startPlanGeneration() {
+            const loadingModal = document.getElementById('planLoadingModal');
+            const progressBar = document.getElementById('planProgressBar');
+            const progressText = document.getElementById('planProgressPercent');
+            
+            loadingModal.classList.add('active');
+            
+            let progress = 0;
+            const duration = 2000; // 2 seconds
+            const interval = 20;
+            const step = 100 / (duration / interval);
+            
+            const timer = setInterval(() => {
+                progress += step;
+                if (progress >= 100) {
+                    progress = 100;
+                    clearInterval(timer);
+                    showPlanResult();
+                }
+                progressBar.style.width = progress + '%';
+                progressText.innerText = Math.floor(progress) + '%';
+            }, interval);
+        }
+
+        function showPlanResult() {
+            const med = document.getElementById('r-medication').value;
+            const plan = App.generateFollowUpPlan(med);
+            
+            document.getElementById('planLoadingModal').classList.remove('active');
+            const resultModal = document.getElementById('planResultModal');
+            const taskList = document.getElementById('planTaskList');
+            
+            taskList.innerHTML = `
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 16px;">计划任务清单</div>
+                ${plan.tasks.map(task => `
+                    <div class="plan-task-item">
+                        <div class="plan-task-icon" style="background: ${task.color}15; color: ${task.color}">${task.icon}</div>
+                        <div class="plan-task-info">
+                            <div class="plan-task-title">${task.title}</div>
+                            <div class="plan-task-time">${task.desc} · ${task.date}</div>
+                        </div>
+                    </div>
+                `).join('')}
+                
+                <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin: 24px 0 12px;">个性化推荐</div>
+                ${plan.recommendations.map(edu => `
+                    <div class="plan-edu-item">
+                        <span>${edu.type === '视频' ? '🎬' : '📖'}</span>
+                        <span style="flex:1">${edu.title}</span>
+                        <span>›</span>
+                    </div>
+                `).join('')}
+            `;
+            
+            resultModal.classList.add('active');
         }
 
         // 预览放大逻辑

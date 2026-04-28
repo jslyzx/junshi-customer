@@ -79,6 +79,55 @@ const App = {
             hasConsent: !!info.ocrConsent,
             isComplete: !!info.ocrIdCard && !!info.ocrIdCardBack && !!info.ocrDiagnosis && !!info.ocrConsent
         };
+    },
+
+    // 生成随访计划
+    generateFollowUpPlan(medication) {
+        const today = new Date();
+        const plan = {
+            medication: medication || 'PD-1 单抗',
+            tasks: [
+                {
+                    id: 1,
+                    type: 'medication',
+                    title: '下一次用药',
+                    desc: '请按医嘱准时用药',
+                    date: this.formatDate(new Date(today.getTime() + 3 * 24 * 60 * 60 * 1000)), // 3天后
+                    icon: '💊',
+                    color: '#007AFF'
+                },
+                {
+                    id: 2,
+                    type: 'visit',
+                    title: '线下复诊',
+                    desc: '上海交通大学附属瑞金医院',
+                    date: this.formatDate(new Date(today.getTime() + 12 * 24 * 60 * 60 * 1000)), // 12天后
+                    icon: '🏥',
+                    color: '#34C759'
+                },
+                {
+                    id: 3,
+                    type: 'followup',
+                    title: '线上随访',
+                    desc: '完成健康状况评估',
+                    date: this.formatDate(new Date(today.getTime() + 7 * 24 * 60 * 60 * 1000)), // 7天后
+                    icon: '📱',
+                    color: '#FF9500'
+                }
+            ],
+            recommendations: [
+                { id: 9, title: '王晓雅：免疫联合治疗的最新进展', type: '视频' },
+                { id: 5, title: '治疗期间营养膳食搭配建议', type: '图文' }
+            ]
+        };
+        this.savePatientInfo({ followUpPlan: plan });
+        return plan;
+    },
+
+    // 获取当前随访计划
+    getFollowUpPlan() {
+        const info = this.getPatientInfo();
+        return info ? info.followUpPlan : null;
     }
 };
 
