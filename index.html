@@ -576,23 +576,26 @@
                 "我能够协助您完成身份核验和资料补录。"
             ];
             const reply = responses[Math.floor(Math.random() * responses.length)];
-            setTimeout(() => appendMessage('received', `[AI] ${reply}`), 1000);
+            setTimeout(() => appendMessage('received', `${reply}`), 1000);
         }
 
         function switchToHuman() {
-            chatMode = 'human';
+            chatMode = 'message';
             setTimeout(() => {
-                appendMessage('received', "正在为您接入人工客服，请稍候...");
-                setTimeout(() => {
-                    document.getElementById('consultTitle').innerText = "人工客服专员";
-                    document.getElementById('humanStatus').style.display = 'block';
-                    appendMessage('received', "您好，我是您的专属项目专员小林，很高兴为您服务。请问有什么可以帮您？");
-                }, 2000);
+                const statusBadge = document.getElementById('humanStatus');
+                document.getElementById('consultTitle').innerText = "随访专员留言";
+                
+                statusBadge.innerText = "留言模式";
+                statusBadge.style.color = "#E6A23C";
+                statusBadge.style.background = "rgba(230, 162, 60, 0.1)";
+                statusBadge.style.display = 'block';
+                
+                appendMessage('received', "您已进入随访专员留言模式。\n\n工作时间为【工作日 09:00 - 18:00】。\n请直接发送您遇到的问题，您的随访专员会在工作时间看到后尽快回复您。\n工作时间之外，您可以联系项目专员处理。");
             }, 500);
         }
 
         function simulateHumanResponse() {
-            setTimeout(() => appendMessage('received', "收到，我正在核实您的资料，请稍等。"), 1500);
+            setTimeout(() => appendMessage('received', "已收到您的留言记录。随访专员将在工作时间为您处理。工作时间之外如有紧急情况，请随时通过电话联系项目专员。"), 1000);
         }
 
         // --- 悬浮窗拖动逻辑 ---
