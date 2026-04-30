@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+    <title>状态管理器 · 君实生物</title>
+    <link rel="stylesheet" href="css/style.css" />
+    <style>
+        .sm-overview-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .sm-overview-item {
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid rgba(0, 0, 0, 0.06);
+            border-radius: 14px;
+            padding: 12px 14px;
+        }
+
+        .sm-overview-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-bottom: 8px;
+            background: #E5E5EA;
+        }
+
+        .sm-overview-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            margin-bottom: 3px;
+        }
+
+        .sm-overview-val {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .preset-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .preset-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: 1.5px solid #E5E7EB;
+            background: white;
+            cursor: pointer;
+            text-align: left;
+            width: 100%;
+        }
+
+        .preset-btn.active {
+            border-color: var(--preset-color);
+            background: color-mix(in srgb, var(--preset-color) 10%, white);
+        }
+
+        .preset-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            flex-shrink: 0;
+            background: var(--preset-color);
+        }
+
+        .preset-label {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 2px;
+        }
+
+        .preset-btn.active .preset-label {
+            color: var(--preset-color);
+        }
+
+        .preset-desc {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .field-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            gap: 10px;
+        }
+
+        .field-row:last-child {
+            border-bottom: none;
+        }
+
+        .field-label {
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-main);
+            flex-shrink: 0;
+            min-width: 90px;
+        }
+
+        .field-right {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: flex-end;
+        }
+
+        .toggle-wrap {
+            position: relative;
+            width: 48px;
+            height: 28px;
+            flex-shrink: 0;
+        }
+
+        .toggle-wrap input {
+            display: none;
+        }
+
+        .toggle-track {
+            display: block;
+            width: 48px;
+            height: 28px;
+            border-radius: 14px;
+            background: #E5E5EA;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .toggle-wrap input:checked+.toggle-track {
+            background: var(--success-color);
+        }
+
+        .toggle-thumb {
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+            pointer-events: none;
+            transition: transform 0.2s;
+        }
+
+        .toggle-wrap input:checked~.toggle-thumb {
+            transform: translateX(20px);
+        }
+
+        .sm-select {
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 5px 8px;
+            font-size: 12px;
+            color: var(--text-main);
+            background: white;
+            cursor: pointer;
+            outline: none;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sm-badge {
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .badge-gray {
+            background: #F2F2F7;
+            color: #8E8E93;
+        }
+
+        .badge-green {
+            background: #E1F5E8;
+            color: #34C759;
+        }
+
+        .badge-orange {
+            background: #FFF3E0;
+            color: #FF9500;
+        }
+
+        .badge-blue {
+            background: #E5F1FF;
+            color: #007AFF;
+        }
+
+        .badge-red {
+            background: #FFE5E5;
+            color: #FF3B30;
+        }
+
+        .sm-mini-btn {
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: 500;
+            color: var(--primary-color);
+            background: #EFF6FF;
+            cursor: pointer;
+            white-space: nowrap;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sm-text-input {
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 5px 10px;
+            font-size: 13px;
+            color: var(--text-main);
+            background: white;
+            outline: none;
+            text-align: right;
+            max-width: 160px;
+            width: 100%;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .sm-text-input:focus {
+            border-color: var(--primary-color);
+        }
+
+        .json-area {
+            width: 100%;
+            min-height: 200px;
+            font-family: 'SF Mono', monospace;
+            font-size: 11px;
+            line-height: 1.7;
+            color: #111827;
+            background: rgba(0, 0, 0, 0.03);
+            border: 1.5px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 12px;
+            resize: vertical;
+            outline: none;
+            display: block;
+        }
+
+        .json-area:focus {
+            border-color: var(--primary-color);
+        }
+
+        .json-area.error {
+            border-color: var(--danger-color);
+        }
+
+        .json-preview {
+            font-family: 'SF Mono', monospace;
+            font-size: 11px;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.03);
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 12px;
+            line-height: 1.7;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .apply-btn {
+            margin-top: 10px;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            background: var(--primary-gradient);
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .apply-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+        }
+
+        .danger-card {
+            border-color: rgba(255, 59, 48, 0.25) !important;
+        }
+
+        .danger-title {
+            color: var(--danger-color) !important;
+        }
+
+        .reset-btn {
+            width: 100%;
+            padding: 14px;
+            border-radius: 14px;
+            border: 1.5px solid var(--danger-color);
+            background: rgba(255, 59, 48, 0.05);
+            color: var(--danger-color);
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        .card-title-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 14px;
+        }
+
+        .dev-badge {
+            background: #FFF3E0;
+            color: #FF9500;
+            padding: 3px 10px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+
+        #sm-toast {
+            position: fixed;
+            top: 72px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: white;
+            padding: 10px 24px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+            z-index: 9999;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+            pointer-events: none;
+            white-space: nowrap;
+            opacity: 0;
+            transition: opacity 0.25s;
+            background: var(--success-color);
+        }
+
+        #sm-toast.show {
+            opacity: 1;
+        }
+
+        #sm-toast.error {
+            background: var(--danger-color);
+        }
+
+        .sm-footer-note {
+            text-align: center;
+            font-size: 11px;
+            color: #C7C7CC;
+            padding: 8px 0 24px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-blob blob-1"></div>
+    <div class="bg-blob blob-2"></div>
+    <div id="sm-toast"></div>
+
+    <div class="header">
+        <a href="index.html" class="back-btn">‹</a>
+        <h1>🔧 状态管理器</h1>
+        <span class="dev-badge" style="position:absolute;right:16px">DEV</span>
+    </div>
+
+    <div class="container">
+        <!-- 状态总览 -->
+        <div class="card animate-up">
+            <div class="card-title">📊 当前状态总览</div>
+            <div class="sm-overview-grid">
+                <div class="sm-overview-item">
+                    <div class="sm-overview-dot" id="dot-bind"></div>
+                    <div class="sm-overview-label">医生绑定</div>
+                    <div class="sm-overview-val" id="ov-bind">未绑定</div>
+                </div>
+                <div class="sm-overview-item">
+                    <div class="sm-overview-dot" id="dot-doc"></div>
+                    <div class="sm-overview-label">建档资料</div>
+                    <div class="sm-overview-val" id="ov-doc">0 / 4 份</div>
+                </div>
+                <div class="sm-overview-item">
+                    <div class="sm-overview-dot" id="dot-enroll"></div>
+                    <div class="sm-overview-label">入组状态</div>
+                    <div class="sm-overview-val" id="ov-enroll">未开始</div>
+                </div>
+                <div class="sm-overview-item">
+                    <div class="sm-overview-dot" id="dot-plan"></div>
+                    <div class="sm-overview-label">随访计划</div>
+                    <div class="sm-overview-val" id="ov-plan">未生成</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 快速场景 -->
+        <div class="card animate-up" style="animation-delay:0.05s">
+            <div class="card-title">⚡️ 快速切换场景</div>
+            <div class="preset-grid" id="preset-grid"></div>
+        </div>
+
+        <!-- 绑定状态 -->
+        <div class="card animate-up" style="animation-delay:0.08s">
+            <div class="card-title">🔗 绑定状态</div>
+            <div class="field-row">
+                <span class="field-label">已绑定医生</span>
+                <div class="field-right">
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="toggle-bound" onchange="SM.toggleBound(this.checked)" />
+                        <span class="toggle-track"></span>
+                        <span class="toggle-thumb"></span>
+                    </label>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">医生姓名</span>
+                <div class="field-right"><input class="sm-text-input" id="input-docname" placeholder="王晓雅"
+                        oninput="SM.setNested('doctor.name',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">所在医院</span>
+                <div class="field-right"><input class="sm-text-input" id="input-dochos" placeholder="南京鼓楼医院"
+                        oninput="SM.setNested('doctor.hospital',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">科室</span>
+                <div class="field-right"><input class="sm-text-input" id="input-docdept" placeholder="肿瘤科"
+                        oninput="SM.setNested('doctor.dept',this.value)" /></div>
+            </div>
+        </div>
+
+        <!-- 入组状态 -->
+        <div class="card animate-up" style="animation-delay:0.1s">
+            <div class="card-title">📋 入组状态</div>
+            <div class="field-row">
+                <span class="field-label">入组状态</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-enroll">未开始</span>
+                    <select class="sm-select" id="sel-enroll" onchange="SM.setNested('enrollStatus',this.value)">
+                        <option value="">未开始</option>
+                        <option value="pending">资料审核中</option>
+                        <option value="enrolled">已入组</option>
+                        <option value="rejected">审核未通过</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">知情同意</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-consent">未提交</span>
+                    <select class="sm-select" id="sel-consent" onchange="SM.setNested('consentStatus',this.value)">
+                        <option value="">未提交</option>
+                        <option value="reviewing">审核中</option>
+                        <option value="approved">已通过</option>
+                        <option value="rejected">审核不通过</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- 建档资料 -->
+        <div class="card animate-up" style="animation-delay:0.12s">
+            <div class="card-title">🪪 建档资料</div>
+            <div class="field-row">
+                <span class="field-label">身份证正面</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-idcard">未上传</span>
+                    <button class="sm-mini-btn" id="btn-idcard" onclick="SM.toggleDoc('ocrIdCard')">模拟上传</button>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">身份证反面</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-idcardback">未上传</span>
+                    <button class="sm-mini-btn" id="btn-idcardback"
+                        onclick="SM.toggleDoc('ocrIdCardBack')">模拟上传</button>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">诊断证明</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-diag">未上传</span>
+                    <button class="sm-mini-btn" id="btn-diag" onclick="SM.toggleDoc('ocrDiagnosis')">模拟上传</button>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">知情同意书</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-consent-doc">未上传</span>
+                    <button class="sm-mini-btn" id="btn-consent-doc" onclick="SM.toggleDoc('ocrConsent')">模拟上传</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 患者基本信息 -->
+        <div class="card animate-up" style="animation-delay:0.14s">
+            <div class="card-title">👤 患者基本信息</div>
+            <div class="field-row">
+                <span class="field-label">姓名</span>
+                <div class="field-right"><input class="sm-text-input" id="input-name" placeholder="林建国"
+                        oninput="SM.setNested('name',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">手机号</span>
+                <div class="field-right"><input class="sm-text-input" id="input-phone" placeholder="138****6789"
+                        oninput="SM.setNested('phone',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">身份证号</span>
+                <div class="field-right"><input class="sm-text-input" id="input-idno" placeholder="310115..."
+                        oninput="SM.setNested('ocrIdCard.idCard',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">确诊疾病</span>
+                <div class="field-right"><input class="sm-text-input" id="input-disease" placeholder="非小细胞肺癌"
+                        oninput="SM.setNested('ocrDiagnosis.disease',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">疾病分期</span>
+                <div class="field-right"><input class="sm-text-input" id="input-stage" placeholder="III期"
+                        oninput="SM.setNested('ocrDiagnosis.stage',this.value)" /></div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">确诊医院</span>
+                <div class="field-right"><input class="sm-text-input" id="input-hospital" placeholder="瑞金医院"
+                        oninput="SM.setNested('ocrDiagnosis.hospital',this.value)" /></div>
+            </div>
+        </div>
+
+        <!-- 随访计划 -->
+        <div class="card animate-up" style="animation-delay:0.16s">
+            <div class="card-title">💊 随访计划</div>
+            <div class="field-row">
+                <span class="field-label">随访计划</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-plan">未生成</span>
+                    <button class="sm-mini-btn" id="btn-plan" onclick="SM.togglePlan()">生成计划</button>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">用药方案</span>
+                <div class="field-right"><input class="sm-text-input" id="input-medication" placeholder="PD-1 单抗"
+                        oninput="SM.setNested('followUpPlan.medication',this.value)" /></div>
+            </div>
+        </div>
+
+        <!-- 原始 JSON -->
+        <div class="card animate-up" style="animation-delay:0.18s">
+            <div class="card-title-row">
+                <div class="card-title" style="margin-bottom:0">{ } 原始 JSON 数据</div>
+                <button class="sm-mini-btn" id="btn-toggle-raw" onclick="SM.toggleRaw()">展开编辑</button>
+            </div>
+            <div id="json-preview-wrap">
+                <div class="json-preview" id="json-preview"></div>
+            </div>
+            <div id="json-edit-wrap" class="hidden">
+                <textarea class="json-area" id="json-textarea" oninput="SM.onRawEdit(this.value)" rows="12"></textarea>
+                <div id="json-error" class="hidden" style="color:var(--danger-color);font-size:12px;margin-top:6px">JSON
+                    格式错误，请检查后再应用</div>
+                <button class="apply-btn" id="apply-json-btn" onclick="SM.applyRaw()">应用 JSON</button>
+            </div>
+        </div>
+
+        <!-- 危险操作 -->
+        <div class="card danger-card animate-up" style="animation-delay:0.20s">
+            <div class="card-title danger-title">⚠️ 危险操作</div>
+            <button class="reset-btn" onclick="SM.resetAll()">清空所有数据（模拟全新用户）</button>
+            <p style="font-size:12px;color:var(--text-muted);text-align:center;margin-top:10px">等同于用户首次扫码进入的状态</p>
+        </div>
+
+        <div class="sm-footer-note">所有修改实时写入 localStorage · 刷新目标页面即可生效</div>
+    </div>
+
+    <!-- Tab 栏 -->
+    <div class="tab-bar">
+        <a href="index.html" class="tab-item"><span class="tab-icon">🏠</span><span>首页</span></a>
+        <a href="education-detail.html" class="tab-item"><span class="tab-icon">📚</span><span>患者教育</span></a>
+        <a href="index.html#consult" class="tab-item"><span class="tab-icon">💬</span><span>咨询</span></a>
+        <a href="index.html#messages" class="tab-item"><span class="tab-icon">🔔</span><span>消息</span></a>
+        <a href="profile.html" class="tab-item active"><span class="tab-icon">👤</span><span>我的</span></a>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'patient_info';
+        const STATUS_META = {
+            '': { cls: 'badge-gray', label: '未开始' },
+            pending: { cls: 'badge-orange', label: '审核中' },
+            enrolled: { cls: 'badge-green', label: '已入组' },
+            rejected: { cls: 'badge-red', label: '未通过' },
+            approved: { cls: 'badge-green', label: '已通过' },
+            reviewing: { cls: 'badge-blue', label: '审核中' },
+        };
+        const DOC_MOCK = {
+            ocrIdCard: { name: '林建国', idCard: '310115199203151234', gender: '男', birthDate: '1992-03-15' },
+            ocrIdCardBack: { validFrom: '2022-03-15', validTo: '2032-03-15' },
+            ocrDiagnosis: { disease: '非小细胞肺癌', stage: 'III期', hospital: '上海交通大学附属瑞金医院' },
+            ocrConsent: { signDate: '2024-03-24', status: '待审核' },
+        };
+        function fmtDate(days) {
+            return new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
+        }
+        function getNested(obj, path) {
+            return path.split('.').reduce((a, k) => (a && a[k] !== undefined ? a[k] : undefined), obj);
+        }
+        function setNested(obj, path, val) {
+            const keys = path.split('.'), res = Object.assign({}, obj); let cur = res;
+            for (let i = 0; i < keys.length - 1; i++) { cur[keys[i]] = cur[keys[i]] ? Object.assign({}, cur[keys[i]]) : {}; cur = cur[keys[i]]; }
+            cur[keys[keys.length - 1]] = val; return res;
+        }
+        const PRESETS = [
+            { id: 'fresh', label: '全新用户', desc: '刚扫码，未绑定任何信息', color: '#8E8E93', data: null },
+            {
+                id: 'bound', label: '已绑定医生', desc: '完成扫码绑定，未建档', color: '#007AFF',
+                data: { isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' } }
+            },
+            {
+                id: 'profiled', label: '已完成建档', desc: '资料全部上传，待审核', color: '#FF9500',
+                data: {
+                    isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
+                    ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '待审核' },
+                    consentStatus: 'reviewing', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
+                }
+            },
+            {
+                id: 'enrolled', label: '已入组', desc: '审核通过，随访计划已生成', color: '#34C759',
+                data: {
+                    isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
+                    ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '已生效' },
+                    consentStatus: 'approved', enrollStatus: 'enrolled', name: '林建国', phone: '13812346789',
+                    followUpPlan: {
+                        medication: 'PD-1 单抗（特瑞普利单抗）',
+                        tasks: [
+                            { id: 1, type: 'medication', title: '下一次用药', desc: '请按医嘱准时用药', date: fmtDate(3), icon: '💊', color: '#007AFF' },
+                            { id: 2, type: 'visit', title: '线下复诊', desc: '上海交通大学附属瑞金医院', date: fmtDate(12), icon: '🏥', color: '#34C759' },
+                            { id: 3, type: 'followup', title: '线上随访', desc: '完成健康状况评估', date: fmtDate(7), icon: '📱', color: '#FF9500' },
+                        ]
+                    }
+                }
+            },
+            {
+                id: 'consent_rejected', label: '知情同意被退回', desc: '上传的知情同意书审核不通过', color: '#FF3B30',
+                data: {
+                    isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
+                    ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '审核不通过' },
+                    consentStatus: 'rejected', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
+                }
+            },
+        ];
+        const SM = {
+            _rawErr: false, _rawVis: false, _timer: null,
+            get() { try { return JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch { return null; } },
+            save(data) {
+                data === null ? localStorage.removeItem(STORAGE_KEY) : localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                this.render(data); this.toast('已保存');
+            },
+            setNested(path, val) {
+                const u = setNested(this.get() || {}, path, val);
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(u));
+                this.renderOverview(u); this.syncRaw(u); this.detectPreset(u);
+            },
+            toggleBound(v) { const c = this.get() || {}; c.isBound = v; this.save(c); },
+            toggleDoc(key) { const c = this.get() || {}; if (c[key]) delete c[key]; else c[key] = DOC_MOCK[key] || {}; this.save(c); },
+            togglePlan() {
+                const c = this.get() || {};
+                if (c.followUpPlan) { delete c.followUpPlan; }
+                else {
+                    c.followUpPlan = {
+                        medication: c.ocrDiagnosis?.medication || 'PD-1 单抗（特瑞普利单抗）', tasks: [
+                            { id: 1, type: 'medication', title: '下一次用药', desc: '请按医嘱准时用药', date: fmtDate(3), icon: '💊', color: '#007AFF' },
+                            { id: 2, type: 'visit', title: '线下复诊', desc: '上海交通大学附属瑞金医院', date: fmtDate(12), icon: '🏥', color: '#34C759' },
+                            { id: 3, type: 'followup', title: '线上随访', desc: '完成健康状况评估', date: fmtDate(7), icon: '📱', color: '#FF9500' },
+                        ]
+                    };
+                }
+                this.save(c);
+            },
+            applyPreset(p) { this.save(p.data ? JSON.parse(JSON.stringify(p.data)) : null); this.toast('已切换：' + p.label); },
+            detectPreset(data) {
+                let id = null;
+                if (!data) id = 'fresh';
+                else if (data.enrollStatus === 'enrolled') id = 'enrolled';
+                else if (data.consentStatus === 'rejected') id = 'consent_rejected';
+                else if (data.ocrIdCard && data.ocrConsent) id = 'profiled';
+                else if (data.isBound) id = 'bound';
+                document.querySelectorAll('.preset-btn').forEach(b => b.classList.toggle('active', b.dataset.preset === id));
+            },
+            toggleRaw() {
+                this._rawVis = !this._rawVis;
+                document.getElementById('json-preview-wrap').classList.toggle('hidden', this._rawVis);
+                document.getElementById('json-edit-wrap').classList.toggle('hidden', !this._rawVis);
+                document.getElementById('btn-toggle-raw').textContent = this._rawVis ? '收起' : '展开编辑';
+            },
+            onRawEdit(v) {
+                try {
+                    JSON.parse(v); this._rawErr = false;
+                    document.getElementById('json-error').classList.add('hidden');
+                    document.getElementById('json-textarea').classList.remove('error');
+                    document.getElementById('apply-json-btn').disabled = false;
+                } catch {
+                    this._rawErr = true;
+                    document.getElementById('json-error').classList.remove('hidden');
+                    document.getElementById('json-textarea').classList.add('error');
+                    document.getElementById('apply-json-btn').disabled = true;
+                }
+            },
+            applyRaw() { if (this._rawErr) return; try { this.save(JSON.parse(document.getElementById('json-textarea').value)); } catch { } },
+            syncRaw(data) {
+                const s = data ? JSON.stringify(data, null, 2) : 'null';
+                document.getElementById('json-textarea').value = s;
+                const p = document.getElementById('json-preview');
+                p.textContent = s.length > 300 ? s.slice(0, 300) + '...' : s;
+            },
+            resetAll() { if (!confirm('确认清空所有本地数据？')) return; this.save(null); },
+            toast(msg, type) {
+                const el = document.getElementById('sm-toast');
+                el.textContent = msg; el.className = 'show' + (type === 'error' ? ' error' : '');
+                clearTimeout(this._timer); this._timer = setTimeout(() => el.className = '', 2200);
+            },
+            render(data) { this.renderOverview(data); this.renderFields(data); this.syncRaw(data); this.detectPreset(data); },
+            renderOverview(data) {
+                const isBound = !!(data && data.isBound);
+                const dc = ['ocrIdCard', 'ocrIdCardBack', 'ocrDiagnosis', 'ocrConsent'].filter(k => data && data[k]).length;
+                const hasPlan = !!(data && data.followUpPlan);
+                const es = (data && data.enrollStatus) || '';
+                const em = STATUS_META[es] || STATUS_META[''];
+                const dotC = (v, t, f) => v ? t : f;
+                document.getElementById('dot-bind').style.background = isBound ? '#34C759' : '#E5E5EA';
+                document.getElementById('ov-bind').style.color = isBound ? '#34C759' : '#8E8E93';
+                document.getElementById('ov-bind').textContent = isBound ? (data.doctor?.name || '已绑定') : '未绑定';
+                const dc2 = dc === 4 ? '#34C759' : dc > 0 ? '#FF9500' : '#E5E5EA';
+                document.getElementById('dot-doc').style.background = dc2;
+                document.getElementById('ov-doc').style.color = dc === 4 ? '#34C759' : dc > 0 ? '#FF9500' : '#8E8E93';
+                document.getElementById('ov-doc').textContent = dc + ' / 4 份';
+                const ec = { '': '#E5E5EA', pending: '#FF9500', enrolled: '#34C759', rejected: '#FF3B30' }[es] || '#E5E5EA';
+                document.getElementById('dot-enroll').style.background = ec;
+                document.getElementById('ov-enroll').style.color = ec === '#E5E5EA' ? '#8E8E93' : ec;
+                document.getElementById('ov-enroll').textContent = em.label;
+                document.getElementById('dot-plan').style.background = hasPlan ? '#34C759' : '#E5E5EA';
+                document.getElementById('ov-plan').style.color = hasPlan ? '#34C759' : '#8E8E93';
+                document.getElementById('ov-plan').textContent = hasPlan ? '已生成' : '未生成';
+            },
+            renderFields(data) {
+                const v = p => getNested(data, p) || '';
+                document.getElementById('toggle-bound').checked = !!(data && data.isBound);
+                document.getElementById('input-docname').value = v('doctor.name');
+                document.getElementById('input-dochos').value = v('doctor.hospital');
+                document.getElementById('input-docdept').value = v('doctor.dept');
+                const setBadge = (id, statusKey) => {
+                    const m = STATUS_META[statusKey] || STATUS_META[''];
+                    const el = document.getElementById(id); el.className = 'sm-badge ' + m.cls; el.textContent = m.label;
+                };
+                const es = (data && data.enrollStatus) || '';
+                document.getElementById('sel-enroll').value = es; setBadge('badge-enroll', es);
+                const cs = (data && data.consentStatus) || '';
+                document.getElementById('sel-consent').value = cs; setBadge('badge-consent', cs);
+                [['ocrIdCard', 'badge-idcard', 'btn-idcard'],
+                ['ocrIdCardBack', 'badge-idcardback', 'btn-idcardback'],
+                ['ocrDiagnosis', 'badge-diag', 'btn-diag'],
+                ['ocrConsent', 'badge-consent-doc', 'btn-consent-doc']].forEach(([key, bid, btnid]) => {
+                    const ex = !!(data && data[key]);
+                    const b = document.getElementById(bid); b.className = 'sm-badge ' + (ex ? 'badge-green' : 'badge-gray'); b.textContent = ex ? '已上传' : '未上传';
+                    document.getElementById(btnid).textContent = ex ? '清除' : '模拟上传';
+                });
+                document.getElementById('input-name').value = v('name');
+                document.getElementById('input-phone').value = v('phone');
+                document.getElementById('input-idno').value = v('ocrIdCard.idCard');
+                document.getElementById('input-disease').value = v('ocrDiagnosis.disease');
+                document.getElementById('input-stage').value = v('ocrDiagnosis.stage');
+                document.getElementById('input-hospital').value = v('ocrDiagnosis.hospital');
+                const hp = !!(data && data.followUpPlan);
+                const bp = document.getElementById('badge-plan'); bp.className = 'sm-badge ' + (hp ? 'badge-green' : 'badge-gray'); bp.textContent = hp ? '已生成' : '未生成';
+                document.getElementById('btn-plan').textContent = hp ? '清除计划' : '生成计划';
+                document.getElementById('input-medication').value = v('followUpPlan.medication');
+            },
+            init() {
+                const grid = document.getElementById('preset-grid');
+                PRESETS.forEach(p => {
+                    const btn = document.createElement('button');
+                    btn.className = 'preset-btn'; btn.dataset.preset = p.id;
+                    btn.style.setProperty('--preset-color', p.color);
+                    btn.innerHTML = `<div class="preset-dot"></div><div><div class="preset-label">${p.label}</div><div class="preset-desc">${p.desc}</div></div>`;
+                    btn.addEventListener('click', () => SM.applyPreset(p));
+                    grid.appendChild(btn);
+                });
+                this.render(this.get());
+            },
+        };
+        document.addEventListener('DOMContentLoaded', () => SM.init());
+    </script>
+</body>
+
+</html>
