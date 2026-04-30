@@ -452,6 +452,8 @@
                         <option value="pending">资料审核中</option>
                         <option value="enrolled">已入组</option>
                         <option value="rejected">审核未通过</option>
+                        <option value="withdrawn">已撤回</option>
+                        <option value="exited">已退出项目</option>
                     </select>
                 </div>
             </div>
@@ -464,7 +466,18 @@
                         <option value="reviewing">审核中</option>
                         <option value="approved">已通过</option>
                         <option value="rejected">审核不通过</option>
+                        <option value="withdrawn">已撤回</option>
                     </select>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">专员授权</span>
+                <div class="field-right">
+                    <label class="toggle-wrap">
+                        <input type="checkbox" id="toggle-specialist" onchange="SM.setNested('specialistAuthorized', this.checked)" />
+                        <span class="toggle-track"></span>
+                        <span class="toggle-thumb"></span>
+                    </label>
                 </div>
             </div>
         </div>
@@ -536,6 +549,25 @@
                 <div class="field-right"><input class="sm-text-input" id="input-hospital" placeholder="瑞金医院"
                         oninput="SM.setNested('ocrDiagnosis.hospital',this.value)" /></div>
             </div>
+            <div class="field-row">
+                <span class="field-label">随访偏好</span>
+                <div class="field-right">
+                    <select class="sm-select" id="sel-pref" onchange="SM.setNested('followUpPreference',this.value)">
+                        <option value="电话">电话</option>
+                        <option value="微信">微信</option>
+                    </select>
+                </div>
+            </div>
+            <div class="field-row">
+                <span class="field-label">治疗阶段</span>
+                <div class="field-right">
+                    <select class="sm-select" id="sel-treat-stage" onchange="SM.setNested('treatmentStage',this.value)">
+                        <option value="阶段一">阶段一</option>
+                        <option value="阶段二">阶段二</option>
+                        <option value="阶段三">阶段三</option>
+                    </select>
+                </div>
+            </div>
         </div>
 
         <!-- 随访计划 -->
@@ -552,6 +584,20 @@
                 <span class="field-label">用药方案</span>
                 <div class="field-right"><input class="sm-text-input" id="input-medication" placeholder="PD-1 单抗"
                         oninput="SM.setNested('followUpPlan.medication',this.value)" /></div>
+            </div>
+        </div>
+
+        <!-- 患者上报动态 -->
+        <div class="card animate-up" style="animation-delay:0.17s">
+            <div class="card-title">📋 患者最新上报</div>
+            <div class="field-row">
+                <span class="field-label">当前用药状态</span>
+                <div class="field-right">
+                    <span class="sm-badge badge-gray" id="badge-med-status">未确认</span>
+                </div>
+            </div>
+            <div id="report-list-container" style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+                <!-- 动态填充 -->
             </div>
         </div>
 
@@ -600,6 +646,8 @@
             rejected: { cls: 'badge-red', label: '未通过' },
             approved: { cls: 'badge-green', label: '已通过' },
             reviewing: { cls: 'badge-blue', label: '审核中' },
+            withdrawn: { cls: 'badge-red', label: '已撤回' },
+            exited: { cls: 'badge-red', label: '已退出项目' },
         };
         const DOC_MOCK = {
             ocrIdCard: { name: '林建国', idCard: '310115199203151234', gender: '男', birthDate: '1992-03-15' },
@@ -745,7 +793,7 @@
                 document.getElementById('dot-doc').style.background = dc2;
                 document.getElementById('ov-doc').style.color = dc === 4 ? '#34C759' : dc > 0 ? '#FF9500' : '#8E8E93';
                 document.getElementById('ov-doc').textContent = dc + ' / 4 份';
-                const ec = { '': '#E5E5EA', pending: '#FF9500', enrolled: '#34C759', rejected: '#FF3B30' }[es] || '#E5E5EA';
+                const ec = { '': '#E5E5EA', pending: '#FF9500', enrolled: '#34C759', rejected: '#FF3B30', withdrawn: '#FF3B30', exited: '#FF3B30' }[es] || '#E5E5EA';
                 document.getElementById('dot-enroll').style.background = ec;
                 document.getElementById('ov-enroll').style.color = ec === '#E5E5EA' ? '#8E8E93' : ec;
                 document.getElementById('ov-enroll').textContent = em.label;
@@ -759,6 +807,7 @@
                 document.getElementById('input-docname').value = v('doctor.name');
                 document.getElementById('input-dochos').value = v('doctor.hospital');
                 document.getElementById('input-docdept').value = v('doctor.dept');
+                document.getElementById('toggle-specialist').checked = !!(data && data.specialistAuthorized);
                 const setBadge = (id, statusKey) => {
                     const m = STATUS_META[statusKey] || STATUS_META[''];
                     const el = document.getElementById(id); el.className = 'sm-badge ' + m.cls; el.textContent = m.label;
@@ -781,6 +830,34 @@
                 document.getElementById('input-disease').value = v('ocrDiagnosis.disease');
                 document.getElementById('input-stage').value = v('ocrDiagnosis.stage');
                 document.getElementById('input-hospital').value = v('ocrDiagnosis.hospital');
+                document.getElementById('sel-pref').value = v('followUpPreference') || '电话';
+                document.getElementById('sel-treat-stage').value = v('treatmentStage') || '阶段一';
+                
+                // 上报动态
+                const ms = v('currentMedStatus') || '未确认';
+                const msB = document.getElementById('badge-med-status');
+                msB.textContent = ms;
+                msB.className = 'sm-badge ' + (ms === '用药中' ? 'badge-blue' : (ms === '停药' || ms === '暂停' ? 'badge-red' : 'badge-orange'));
+
+                const medReports = v('medicationReports') || [];
+                const symReports = v('symptomReports') || [];
+                const reportList = document.getElementById('report-list-container');
+                let html = '';
+                if (medReports.length > 0) {
+                    html += `<div style="font-weight:700; margin:10px 0 5px;">用药记录:</div>`;
+                    medReports.slice(0, 3).forEach(r => {
+                        html += `<div style="margin-bottom:4px; padding-left:10px; border-left:2px solid #ddd;">[${r.date}] ${r.status}${r.notes ? ' - ' + r.notes : ''}</div>`;
+                    });
+                }
+                if (symReports.length > 0) {
+                    html += `<div style="font-weight:700; margin:10px 0 5px; color:#ff4d4f;">症状记录:</div>`;
+                    symReports.slice(0, 3).forEach(r => {
+                        html += `<div style="margin-bottom:4px; padding-left:10px; border-left:2px solid #ff4d4f;">[${r.date}] ${r.symptoms.join(',')} (${r.level})${r.desc ? ' - ' + r.desc : ''}</div>`;
+                    });
+                }
+                if (!html) html = '暂无上报记录';
+                reportList.innerHTML = html;
+
                 const hp = !!(data && data.followUpPlan);
                 const bp = document.getElementById('badge-plan'); bp.className = 'sm-badge ' + (hp ? 'badge-green' : 'badge-gray'); bp.textContent = hp ? '已生成' : '未生成';
                 document.getElementById('btn-plan').textContent = hp ? '清除计划' : '生成计划';

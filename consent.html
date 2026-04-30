@@ -235,16 +235,42 @@
             document.getElementById('infoTime').innerText = patient.consentDate || App.formatDate(new Date());
             
             const banner = document.getElementById('statusBanner');
-            if (patient.consentStatus === 'active') {
+            if (patient.consentStatus === 'approved' || patient.consentStatus === 'active') {
                 banner.className = 'status-header success';
                 document.getElementById('statusTitle').innerText = '审核已通过';
                 document.getElementById('statusDesc').innerText = '您的管理服务已全面开启';
                 document.getElementById('infoStatus').innerText = '正式生效';
+            } else if (patient.consentStatus === 'withdrawn') {
+                banner.className = 'status-header withdrawn';
+                document.getElementById('statusTitle').innerText = '已撤回知情';
+                document.getElementById('statusDesc').innerText = `撤回原因：${patient.consentWithdrawReason || '无'}`;
+                document.getElementById('infoStatus').innerText = '已失效';
+            } else {
+                banner.className = 'status-header pending';
+                document.getElementById('statusTitle').innerText = '审核中';
+                document.getElementById('statusDesc').innerText = '预计在 24 小时内完成审核';
+                document.getElementById('infoStatus').innerText = '待生效';
             }
 
             if (photos.length <= 1) {
                 document.getElementById('navControls').style.display = 'none';
                 document.getElementById('pageIndicator').style.display = 'none';
+            }
+
+            // 添加撤回按钮
+            if (patient.consentStatus !== 'withdrawn') {
+                const actionArea = document.getElementById('manageView');
+                if (!document.getElementById('withdrawBtn')) {
+                    const btn = document.createElement('button');
+                    btn.id = 'withdrawBtn';
+                    btn.className = 'btn btn-outline';
+                    btn.style.marginTop = '20px';
+                    btn.style.borderColor = 'var(--danger-color)';
+                    btn.style.color = 'var(--danger-color)';
+                    btn.innerText = '撤回知情同意';
+                    btn.onclick = withdrawConsent;
+                    actionArea.appendChild(btn);
+                }
             }
         }
 
@@ -313,12 +339,31 @@
         function submitConsent() {
             App.savePatientInfo({
                 consentPhotos: uploadPages,
-                consentStatus: 'active',
+                consentStatus: 'reviewing',
                 ocrConsent: true, // 记录已上传状态
                 consentDate: App.formatDate(new Date())
             });
             alert('知情同意书已提交，请等待审核');
             App.navigateTo('index.html');
+        }
+
+        function withdrawConsent() {
+            const reason = prompt('请输入撤回知情同意的原因：');
+            if (reason === null) return;
+            if (!reason.trim()) {
+                alert('原因不能为空');
+                return;
+            }
+
+            if (confirm('确定要撤回知情同意吗？撤回后将无法享受项目相关服务。')) {
+                App.savePatientInfo({
+                    consentStatus: 'withdrawn',
+                    consentWithdrawReason: reason,
+                    enrollStatus: 'withdrawn'
+                });
+                alert('知情同意已撤回');
+                location.reload();
+            }
         }
 
         // 预览放大逻辑

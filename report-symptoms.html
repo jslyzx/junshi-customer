@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>不适症状上报 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .tag-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 28px;
+        }
+        .symptom-tag {
+            padding: 12px 20px;
+            background: white;
+            border-radius: 16px;
+            border: 1.5px solid transparent;
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        }
+        .symptom-tag:active { transform: scale(0.95); }
+        .symptom-tag.active {
+            background: #FFF1F0;
+            border-color: #FF4D4F;
+            color: #CF1322;
+            box-shadow: 0 6px 15px rgba(255, 77, 79, 0.15);
+        }
+        .severity-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+        .severity-item {
+            padding: 18px 12px;
+            border-radius: 20px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            border: 2px solid transparent;
+            background: white;
+            transition: all 0.3s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .severity-item .sev-icon { font-size: 22px; }
+        .severity-item[data-level="1"].active { border-color: #52C41A; background: #F6FFED; color: #389E0D; box-shadow: 0 8px 20px rgba(82, 196, 26, 0.15); }
+        .severity-item[data-level="2"].active { border-color: #FAAD14; background: #FFFBE6; color: #D48806; box-shadow: 0 8px 20px rgba(250, 173, 20, 0.15); }
+        .severity-item[data-level="3"].active { border-color: #FF4D4F; background: #FFF1F0; color: #CF1322; box-shadow: 0 8px 20px rgba(255, 77, 79, 0.15); }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-2"></div>
+
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>不适症状上报</h1>
+    </div>
+
+    <div class="container animate-up">
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 18px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <span style="width: 3px; height: 14px; background: #FF4D4F; border-radius: 2px;"></span>
+            常见不适症状（可多选）
+        </div>
+        <div class="tag-container">
+            <div class="symptom-tag" onclick="toggleTag(this)">乏力</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">皮疹/瘙痒</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">恶心/呕吐</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">腹泻</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">发热</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">咳嗽/气促</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">关节/肌肉痛</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">食欲不振</div>
+            <div class="symptom-tag" onclick="toggleTag(this)">其他</div>
+        </div>
+
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 18px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <span style="width: 3px; height: 14px; background: #FF4D4F; border-radius: 2px;"></span>
+            程度感观
+        </div>
+        <div class="severity-grid">
+            <div class="severity-item" data-level="1" onclick="selectSeverity(this)">
+                <span class="sev-icon">😊</span>
+                <span>轻度</span>
+            </div>
+            <div class="severity-item" data-level="2" onclick="selectSeverity(this)">
+                <span class="sev-icon">😐</span>
+                <span>中度</span>
+            </div>
+            <div class="severity-item" data-level="3" onclick="selectSeverity(this)">
+                <span class="sev-icon">😫</span>
+                <span>重度</span>
+            </div>
+        </div>
+
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+            <span style="width: 3px; height: 14px; background: #FF4D4F; border-radius: 2px;"></span>
+            具体描述
+        </div>
+        <div class="card" style="padding: 16px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            <textarea id="desc" placeholder="请详细描述您的症状，如发生时间、频率等..." style="width: 100%; border: none; font-family: inherit; font-size: 14px; outline: none; min-height: 120px; resize: none; color: var(--text-main);"></textarea>
+        </div>
+
+        <div style="margin-top: 40px; padding: 0 10px;">
+            <button class="btn btn-primary" style="background: linear-gradient(135deg, #FF4D4F, #CF1322); height: 54px; border-radius: 27px; font-size: 16px; font-weight: 700; box-shadow: 0 10px 25px rgba(255, 77, 79, 0.3);" onclick="submitSymptoms()">立即提交</button>
+            <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 20px; line-height: 1.6;">
+                ⚠️ 提交后专员将收到通知并视情况与您联系。<br>
+                <strong>如症状严重，请立即前往医院就诊。</strong>
+            </p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let selectedLevel = '';
+
+        function toggleTag(el) {
+            el.classList.toggle('active');
+        }
+
+        function selectSeverity(el) {
+            document.querySelectorAll('.severity-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            selectedLevel = el.innerText;
+        }
+
+        function submitSymptoms() {
+            const tags = Array.from(document.querySelectorAll('.symptom-tag.active')).map(t => t.innerText);
+            if (tags.length === 0) {
+                alert('请选择至少一项症状');
+                return;
+            }
+            if (!selectedLevel) {
+                alert('请选择症状程度');
+                return;
+            }
+
+            const desc = document.getElementById('desc').value;
+            
+            // 保存到本地
+            const patient = App.getPatientInfo();
+            const reports = patient.symptomReports || [];
+            reports.unshift({
+                symptoms: tags,
+                level: selectedLevel,
+                desc: desc,
+                date: new Date().toLocaleString()
+            });
+
+            App.savePatientInfo({
+                symptomReports: reports
+            });
+
+            alert('上报成功，专员已收到提醒');
+            history.back();
+        }
+    </script>
+</body>
+</html>

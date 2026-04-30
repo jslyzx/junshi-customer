@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>意见与投诉 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .anfu-card {
+            background: linear-gradient(135deg, #007AFF, #5856D6);
+            color: white;
+            padding: 24px;
+            border-radius: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        .anfu-card::after {
+            content: '❤️';
+            position: absolute;
+            right: -10px;
+            bottom: -10px;
+            font-size: 80px;
+            opacity: 0.1;
+            transform: rotate(-15deg);
+        }
+        .anfu-title { font-size: 18px; font-weight: 800; margin-bottom: 8px; }
+        .anfu-text { font-size: 14px; line-height: 1.6; opacity: 0.9; }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+
+        .select-list {
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+        }
+        .select-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .select-item:last-child { border-bottom: none; }
+        .select-item.active { background: rgba(0, 122, 255, 0.02); }
+        
+        .radio-circle {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #E5E5EA;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .select-item.active .radio-circle {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+        }
+        .radio-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px; height: 8px;
+            background: white; border-radius: 50%;
+            display: none;
+        }
+        .select-item.active .radio-circle::after { display: block; }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>意见与投诉</h1>
+    </div>
+
+    <div class="container animate-up">
+        <div class="anfu-card">
+            <div class="anfu-title">亲爱的患者：</div>
+            <div class="anfu-text">
+                我们非常重视您的每一份反馈。如果您在项目过程中遇到任何不快或问题，请告诉我们。您的监督是我们进步的动力，我们将竭诚为您提供更优质的服务。
+            </div>
+        </div>
+
+        <div class="form-label">请选择投诉对象</div>
+        <div class="select-list">
+            <div class="select-item" onclick="selectObject(this, '随访中心')">
+                <span style="font-weight: 600;">随访中心</span>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="select-item" onclick="selectObject(this, '项目专员')">
+                <span style="font-weight: 600;">项目专员</span>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="select-item" onclick="selectObject(this, '其他')">
+                <span style="font-weight: 600;">其他建议</span>
+                <div class="radio-circle"></div>
+            </div>
+        </div>
+
+        <div class="form-label">投诉内容描述</div>
+        <div class="card" style="padding: 16px; border-radius: 20px;">
+            <textarea id="complaintContent" placeholder="请详细描述您遇到的问题，以便我们更好地为您跟进解决..." style="width: 100%; border: none; font-family: inherit; font-size: 14px; outline: none; min-height: 120px; resize: none;"></textarea>
+        </div>
+
+        <div style="margin-top: 40px; padding: 0 10px;">
+            <button class="btn btn-primary" onclick="submitComplaint()">提交投诉</button>
+            <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 20px;">* 提交后，项目组将在 1-3 个工作日内给予回复</p>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let selectedObject = '';
+
+        function selectObject(el, obj) {
+            document.querySelectorAll('.select-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            selectedObject = obj;
+        }
+
+        function submitComplaint() {
+            if (!selectedObject) {
+                alert('请选择投诉对象');
+                return;
+            }
+            const content = document.getElementById('complaintContent').value;
+            if (!content) {
+                alert('请填写投诉内容');
+                return;
+            }
+
+            // 保存投诉记录
+            const p = App.getPatientInfo();
+            const complaints = p.complaints || [];
+            complaints.unshift({
+                target: selectedObject,
+                content: content,
+                date: new Date().toLocaleString()
+            });
+
+            App.savePatientInfo({ complaints });
+
+            alert('提交成功！我们将尽快为您处理。');
+            history.back();
+        }
+    </script>
+</body>
+</html>

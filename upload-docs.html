@@ -38,6 +38,24 @@
         .doc-upload-card.uploaded .doc-thumb { display: block; }
         .doc-upload-card.uploaded .doc-hint { color: var(--success-color); }
 
+        .option-pill {
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: #F2F2F7;
+            border: 1px solid transparent;
+            color: var(--text-secondary);
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .option-pill.active {
+            background: var(--primary-color);
+            color: white;
+            box-shadow: 0 4px 12px rgba(0, 122, 255, 0.2);
+            font-weight: 600;
+        }
+
         /* OCR 识别动画 */
         .ocr-loading {
             display: none; text-align: center; padding: 40px 0;
@@ -372,6 +390,26 @@
 
             <div class="form-section" style="padding: 4px 16px; margin-top: 16px;">
                 <div class="result-field">
+                    <span class="result-label">随访偏好</span>
+                    <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
+                        <button class="option-pill active" style="padding: 4px 12px; font-size: 12px;" onclick="selectPref(this)">电话</button>
+                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;" onclick="selectPref(this)">微信</button>
+                    </div>
+                    <input type="hidden" id="r-pref" value="电话">
+                </div>
+                <div class="result-field">
+                    <span class="result-label">治疗阶段</span>
+                    <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
+                        <button class="option-pill active" style="padding: 4px 12px; font-size: 12px;" onclick="selectTreatStage(this)">阶段一</button>
+                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;" onclick="selectTreatStage(this)">阶段二</button>
+                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;" onclick="selectTreatStage(this)">阶段三</button>
+                    </div>
+                    <input type="hidden" id="r-treat-stage" value="阶段一">
+                </div>
+            </div>
+
+            <div class="form-section" style="padding: 4px 16px; margin-top: 16px;">
+                <div class="result-field">
                     <span class="result-label">用药方案</span>
                     <input type="text" class="result-value" id="r-medication" value="" placeholder="选传后识别">
                 </div>
@@ -558,6 +596,18 @@
             btn.classList.add('authorized');
         }
 
+        function selectPref(el) {
+            el.parentNode.querySelectorAll('.option-pill').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('r-pref').value = el.innerText;
+        }
+
+        function selectTreatStage(el) {
+            el.parentNode.querySelectorAll('.option-pill').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('r-treat-stage').value = el.innerText;
+        }
+
         function handleSubmit() {
             const name = document.getElementById('r-name').value;
             const idCard = document.getElementById('r-idcard').value;
@@ -591,6 +641,8 @@
                 stage: document.getElementById('r-stage').value,
                 hospital: document.getElementById('r-hospital').value,
                 medication: document.getElementById('r-medication').value,
+                followUpPreference: document.getElementById('r-pref').value,
+                treatmentStage: document.getElementById('r-treat-stage').value,
                 ocrIdCard: !!uploadedTypes['idcard-front'],
                 ocrIdCardBack: !!uploadedTypes['idcard-back'],
                 ocrDiagnosis: !!uploadedTypes['diagnosis'],

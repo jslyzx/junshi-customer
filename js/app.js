@@ -71,13 +71,20 @@ const App = {
     getProfileStatus() {
         const info = this.getPatientInfo();
         if (!info) return { isBound: false, hasIdCard: false, hasDiagnosis: false, hasConsent: false };
+        
+        // 只有 approved 或 active 才算完成知情
+        const hasConsent = info.consentStatus === 'approved' || info.consentStatus === 'active';
+        
         return {
             isBound: !!info.isBound,
             hasIdCard: !!info.ocrIdCard,
             hasIdCardBack: !!info.ocrIdCardBack,
             hasDiagnosis: !!info.ocrDiagnosis,
-            hasConsent: !!info.ocrConsent,
-            isComplete: !!info.ocrIdCard && !!info.ocrIdCardBack && !!info.ocrDiagnosis && !!info.ocrConsent
+            hasConsent: hasConsent,
+            isReviewing: info.consentStatus === 'reviewing',
+            isWithdrawn: info.consentStatus === 'withdrawn',
+            isExited: !!info.isExited || info.enrollStatus === 'exited',
+            isComplete: !!info.ocrIdCard && !!info.ocrIdCardBack && !!info.ocrDiagnosis && hasConsent
         };
     },
 

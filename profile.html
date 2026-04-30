@@ -80,6 +80,28 @@
             </div>
         </div>
 
+        <div class="form-section-title">随访设置</div>
+        <div class="form-section">
+            <div class="form-cell cell-group-vertical">
+                <div class="cell-label">随访方式偏好</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="option-pill active" onclick="selectPref(this)">电话</button>
+                    <button class="option-pill" onclick="selectPref(this)">微信</button>
+                </div>
+                <input type="hidden" id="followUpPreference" value="电话">
+            </div>
+
+            <div class="form-cell cell-group-vertical">
+                <div class="cell-label">当前治疗阶段</div>
+                <div style="display: flex; gap: 8px;">
+                    <button class="option-pill active" onclick="selectTreatStage(this)">阶段一</button>
+                    <button class="option-pill" onclick="selectTreatStage(this)">阶段二</button>
+                    <button class="option-pill" onclick="selectTreatStage(this)">阶段三</button>
+                </div>
+                <input type="hidden" id="treatmentStage" value="阶段一">
+            </div>
+        </div>
+
         <div style="margin-top: 32px;">
             <button class="btn btn-primary" onclick="handleProfileSubmit()">确认并进入管理中心</button>
             <p style="text-align: center; font-size: 13px; color: var(--text-muted); margin-top: 20px;">
@@ -106,10 +128,19 @@
                 // 处理分期按钮状态
                 if (info.stage) {
                     document.getElementById('stage').value = info.stage;
-                    document.querySelectorAll('.option-pill').forEach(btn => {
-                        if (btn.innerText === info.stage) btn.classList.add('active');
-                        else btn.classList.remove('active');
-                    });
+                    updatePills('stage', info.stage);
+                }
+
+                // 处理偏好按钮
+                if (info.followUpPreference) {
+                    document.getElementById('followUpPreference').value = info.followUpPreference;
+                    updatePills('followUpPreference', info.followUpPreference);
+                }
+
+                // 处理治疗阶段
+                if (info.treatmentStage) {
+                    document.getElementById('treatmentStage').value = info.treatmentStage;
+                    updatePills('treatmentStage', info.treatmentStage);
                 }
 
                 // 修改按钮文字
@@ -117,10 +148,32 @@
             }
         }
 
+        function updatePills(inputId, value) {
+            const container = document.getElementById(inputId).previousElementSibling;
+            container.querySelectorAll('.option-pill').forEach(btn => {
+                if (btn.innerText === value) btn.classList.add('active');
+                else btn.classList.remove('active');
+            });
+        }
+
         function selectStage(el) {
-            document.querySelectorAll('.option-pill').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.option-pill').forEach(btn => {
+                if (btn.parentNode === el.parentNode) btn.classList.remove('active');
+            });
             el.classList.add('active');
             document.getElementById('stage').value = el.innerText;
+        }
+
+        function selectPref(el) {
+            el.parentNode.querySelectorAll('.option-pill').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('followUpPreference').value = el.innerText;
+        }
+
+        function selectTreatStage(el) {
+            el.parentNode.querySelectorAll('.option-pill').forEach(btn => btn.classList.remove('active'));
+            el.classList.add('active');
+            document.getElementById('treatmentStage').value = el.innerText;
         }
 
         function handleProfileSubmit() {
@@ -133,6 +186,8 @@
                 stage: document.getElementById('stage').value,
                 diagnosisDate,
                 address: document.getElementById('address').value,
+                followUpPreference: document.getElementById('followUpPreference').value,
+                treatmentStage: document.getElementById('treatmentStage').value,
                 hasProfile: true,
                 consentStatus: 'pending'
             });

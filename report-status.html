@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>用药状态上报 - 君实生物</title>
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .status-list {
+            background: white;
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            margin-bottom: 24px;
+        }
+        .status-cell {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 18px 20px;
+            border-bottom: 1px solid rgba(0,0,0,0.04);
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .status-cell:last-child { border-bottom: none; }
+        .status-cell:active { background: #f9f9f9; }
+        
+        .status-info {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        .status-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+        .status-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+        
+        /* 单选框样式 */
+        .radio-circle {
+            width: 22px;
+            height: 22px;
+            border: 2px solid #E5E5EA;
+            border-radius: 50%;
+            position: relative;
+            transition: all 0.2s;
+        }
+        .status-cell.active .radio-circle {
+            border-color: var(--primary-color);
+            background: var(--primary-color);
+        }
+        .radio-circle::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: white;
+            border-radius: 50%;
+            display: none;
+        }
+        .status-cell.active .radio-circle::after {
+            display: block;
+        }
+
+        /* 状态特定颜色背景 */
+        .status-cell[data-status="用药中"] .status-icon { background: #E6F0FF; color: #007AFF; }
+        .status-cell[data-status="减量"] .status-icon { background: #FFF4E6; color: #FF9500; }
+        .status-cell[data-status="方案调整"] .status-icon { background: #F6EDFF; color: #AF52DE; }
+        .status-cell[data-status="暂停"] .status-icon { background: #FFFBE6; color: #FFCC00; }
+        .status-cell[data-status="停药"] .status-icon { background: #FFF0EF; color: #FF3B30; }
+        .status-cell[data-status="未确认"] .status-icon { background: #F2F2F7; color: #8E8E93; }
+
+        .status-cell.active {
+            background: rgba(0, 122, 255, 0.02);
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-blob blob-1"></div>
+
+    <div class="header">
+        <div class="back-btn" onclick="history.back()">‹</div>
+        <h1>用药状态上报</h1>
+    </div>
+
+    <div class="container animate-up">
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 16px; letter-spacing: 0.5px; padding-left: 4px;">
+            请选择当前用药状态
+        </div>
+        
+        <div class="status-list">
+            <div class="status-cell" data-status="用药中" onclick="selectStatus(this, '用药中')">
+                <div class="status-info">
+                    <div class="status-icon">💊</div>
+                    <div class="status-label">用药中</div>
+                </div>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="status-cell" data-status="减量" onclick="selectStatus(this, '减量')">
+                <div class="status-info">
+                    <div class="status-icon">📉</div>
+                    <div class="status-label">减量</div>
+                </div>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="status-cell" data-status="方案调整" onclick="selectStatus(this, '方案调整')">
+                <div class="status-info">
+                    <div class="status-icon">🔄</div>
+                    <div class="status-label">方案调整</div>
+                </div>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="status-cell" data-status="暂停" onclick="selectStatus(this, '暂停')">
+                <div class="status-info">
+                    <div class="status-icon">⏸</div>
+                    <div class="status-label">暂停</div>
+                </div>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="status-cell" data-status="停药" onclick="selectStatus(this, '停药')">
+                <div class="status-info">
+                    <div class="status-icon">🛑</div>
+                    <div class="status-label">停药</div>
+                </div>
+                <div class="radio-circle"></div>
+            </div>
+            <div class="status-cell" data-status="未确认" onclick="selectStatus(this, '未确认')">
+                <div class="status-info">
+                    <div class="status-icon">❓</div>
+                    <div class="status-label">未确认</div>
+                </div>
+                <div class="radio-circle"></div>
+            </div>
+        </div>
+
+        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px; padding-left: 4px;">
+            补充说明 (可选)
+        </div>
+        <div class="card" style="padding: 16px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03);">
+            <textarea id="notes" placeholder="请输入调整原因或其他说明..." style="width: 100%; border: none; font-family: inherit; font-size: 14px; outline: none; min-height: 100px; resize: none; color: var(--text-main);"></textarea>
+        </div>
+
+        <div style="margin-top: 32px; padding: 0 10px;">
+            <button class="btn btn-primary" style="height: 52px; border-radius: 26px; font-size: 16px; font-weight: 700;" onclick="submitStatus()">确认提交</button>
+        </div>
+    </div>
+
+    <script src="js/app.js"></script>
+    <script>
+        let selectedStatus = '';
+
+        function selectStatus(el, status) {
+            document.querySelectorAll('.status-item').forEach(item => item.classList.remove('active'));
+            el.classList.add('active');
+            selectedStatus = status;
+        }
+
+        function submitStatus() {
+            if (!selectedStatus) {
+                alert('请选择您的用药状态');
+                return;
+            }
+
+            const notes = document.getElementById('notes').value;
+            
+            // 保存状态到本地
+            const patient = App.getPatientInfo();
+            const reports = patient.medicationReports || [];
+            reports.unshift({
+                status: selectedStatus,
+                notes: notes,
+                date: new Date().toLocaleString()
+            });
+
+            App.savePatientInfo({
+                medicationReports: reports,
+                currentMedStatus: selectedStatus
+            });
+
+            alert('提交成功！');
+            history.back();
+        }
+
+        // 初始化：回显当前状态
+        const p = App.getPatientInfo();
+        if (p.currentMedStatus) {
+            document.querySelectorAll('.status-item').forEach(item => {
+                if (item.querySelector('.label').innerText === p.currentMedStatus) {
+                    item.classList.add('active');
+                    selectedStatus = p.currentMedStatus;
+                }
+            });
+        }
+    </script>
+</body>
+</html>

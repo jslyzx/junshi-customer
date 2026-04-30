@@ -464,6 +464,7 @@
                     <div class="icon-box" style="background: var(--primary-soft); color: var(--primary-color);">🔗</div>
                 </div>
 
+
                 <!-- 待完成任务区（未建档时显示） -->
                 <div id="todoSection">
                     <div
@@ -487,15 +488,35 @@
                         </div>
                         <span class="task-arrow">›</span>
                     </div>
-                    <div
-                        style="display: flex; align-items: center; gap: 10px; padding: 14px 16px; background: var(--primary-soft); border-radius: 14px; margin-bottom: 20px;">
-                        <span style="font-size: 16px;">💡</span>
-                        <span style="font-size: 12px; color: var(--text-secondary);">您也可以联系项目专员协助完成资料提交</span>
+                    <div id="specialistTip"
+                        style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: var(--primary-soft); border-radius: 14px; margin-bottom: 20px;">
+                        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                            <span style="font-size: 16px;">💡</span>
+                            <span style="font-size: 12px; color: var(--text-secondary);">您也可以联系项目专员协助完成资料提交</span>
+                        </div>
+                        <button class="sm-mini-btn" style="background: var(--primary-color); color: white; border: none; border-radius: 20px; padding: 6px 12px;" onclick="authorizeSpecialist()">授权专员</button>
                     </div>
                 </div>
 
                 <!-- 管理进度区（建档完成后显示） -->
                 <div id="progressSection" class="hidden">
+                    <!-- 快捷上报区 -->
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
+                        <div class="card" style="margin-bottom: 0; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02);" onclick="App.navigateTo('report-status.html')">
+                            <div style="width: 44px; height: 44px; border-radius: 14px; background: #E6F7FF; display: flex; align-items: center; justify-content: center; font-size: 24px;">💊</div>
+                            <div>
+                                <div style="font-size: 15px; font-weight: 700;">用药状态</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">主动上报近况</div>
+                            </div>
+                        </div>
+                        <div class="card" style="margin-bottom: 0; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02);" onclick="App.navigateTo('report-symptoms.html')">
+                            <div style="width: 44px; height: 44px; border-radius: 14px; background: #FFF1F0; display: flex; align-items: center; justify-content: center; font-size: 24px;">🤮</div>
+                            <div>
+                                <div style="font-size: 15px; font-weight: 700;">不适上报</div>
+                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">记录身体反应</div>
+                            </div>
+                        </div>
+                    </div>
                     <div class="card animate-up" style="animation-delay: 0.3s;">
                         <div class="card-title">管理进度回顾</div>
                         <div>
@@ -669,6 +690,13 @@
                         </div>
                         <span style="color: var(--text-muted);">›</span>
                     </div>
+                    <div class="list-item" style="padding: 18px 24px; border-top: 1px solid rgba(0,0,0,0.04);" onclick="location.href='complaint.html'">
+                        <div style="display:flex; align-items:center; gap: 15px;">
+                            <span style="font-size: 18px;">📢</span>
+                            <span style="font-weight: 500;">意见与投诉</span>
+                        </div>
+                        <span style="color: var(--text-muted);">›</span>
+                    </div>
                 </div>
 
                 <div class="card" style="padding: 10px 0;">
@@ -749,7 +777,25 @@
             }
 
             // 根据建档状态切换显示
-            if (status.isComplete) {
+            if (status.isExited) {
+                document.getElementById('todoSection').classList.add('hidden');
+                document.getElementById('progressSection').classList.add('hidden');
+                document.getElementById('planSection').classList.add('hidden');
+                
+                // 显示退出提示
+                const todo = document.getElementById('todoSection');
+                todo.classList.remove('hidden');
+                todo.innerHTML = `
+                    <div class="card" style="background: rgba(255, 59, 48, 0.05); border: 1px solid rgba(255, 59, 48, 0.2); padding: 24px; text-align: center;">
+                        <div style="font-size: 40px; margin-bottom: 16px;">⚠️</div>
+                        <div style="font-size: 18px; font-weight: 800; color: var(--danger-color); margin-bottom: 8px;">您已退出管理项目</div>
+                        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                            退出原因：${patient.exitReason || '无'}<br>
+                            如需重新加入或有任何疑问，请联系您的随访专员或拨打客服电话。
+                        </p>
+                    </div>
+                `;
+            } else if (status.isComplete) {
                 document.getElementById('todoSection').classList.add('hidden');
                 document.getElementById('progressSection').classList.remove('hidden');
             } else {
@@ -757,19 +803,29 @@
                 document.getElementById('progressSection').classList.add('hidden');
 
                 // 检查知情同意书状态
+                const consentCard = document.getElementById('taskConsent');
                 if (status.hasConsent) {
-                    const consentCard = document.getElementById('taskConsent');
                     consentCard.classList.add('completed');
                     document.getElementById('taskConsentIcon').innerText = '✅';
-                    document.getElementById('taskConsentTitle').innerText = '知情同意书已提交';
+                    document.getElementById('taskConsentTitle').innerText = '知情同意已通过';
                     consentCard.onclick = null;
+                } else if (status.isReviewing) {
+                    consentCard.classList.add('completed');
+                    consentCard.style.background = '#F0F7FF';
+                    consentCard.style.borderColor = 'rgba(0, 122, 255, 0.1)';
+                    document.getElementById('taskConsentIcon').innerText = '⏳';
+                    document.getElementById('taskConsentTitle').innerText = '知情同意审核中';
+                    document.getElementById('taskConsentSub').innerText = '医生正在核对资料，请稍候';
+                } else if (status.isWithdrawn) {
+                    document.getElementById('taskConsentIcon').innerText = '🚫';
+                    document.getElementById('taskConsentTitle').innerText = '知情同意已撤回';
+                    document.getElementById('taskConsentSub').innerText = '点击重新上传签署';
                 }
 
                 // 检查资料完善状态
                 if (status.hasIdCard && status.hasIdCardBack && status.hasDiagnosis) {
                     const taskCard = document.getElementById('taskUploadDocs');
                     taskCard.classList.add('completed');
-                    // 使用更精确的选择器避免样式错乱
                     const icon = taskCard.querySelector('.task-icon-lg');
                     const title = taskCard.querySelector('div[style*="flex: 1"] div:first-child');
                     if (icon) {
@@ -780,6 +836,21 @@
                         title.innerText = '个人信息已完善';
                     }
                     taskCard.onclick = null;
+                }
+
+                // 检查专员授权状态
+                if (patient.specialistAuthorized) {
+                    const tip = document.getElementById('specialistTip');
+                    if (tip) {
+                        tip.style.background = '#E6F9EA';
+                        tip.style.borderColor = 'rgba(30, 125, 50, 0.1)';
+                        tip.innerHTML = `
+                            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                                <span style="font-size: 16px;">✅</span>
+                                <span style="font-size: 12px; color: #1E7D32;">已授权专员协助，请等待资料更新</span>
+                            </div>
+                        `;
+                    }
                 }
             }
 
@@ -1004,6 +1075,17 @@
                 floatBtn.style.left = (window.innerWidth - floatBtn.offsetWidth - 15) + 'px';
             }
         });
+
+        function authorizeSpecialist() {
+            if (confirm('您是否授权项目专员代为上传知情同意书及相关建档资料？授权后专员将可以协助您完善信息。')) {
+                App.savePatientInfo({
+                    specialistAuthorized: true,
+                    specialistAuthDate: App.formatDate(new Date())
+                });
+                alert('授权成功！项目专员将尽快为您处理。');
+                location.reload();
+            }
+        }
 
         function makePhoneCall() {
             if (isDragging) return;

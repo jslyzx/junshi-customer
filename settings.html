@@ -104,6 +104,15 @@
             </div>
         </div>
 
+        <!-- 危险操作 -->
+        <div class="settings-group-title" style="color: var(--danger-color);">重要操作</div>
+        <div class="card" style="padding: 10px 0; border: 1px solid rgba(255, 59, 48, 0.2);">
+            <div class="list-item" style="padding: 18px 24px; border-bottom: none;" onclick="exitProject()">
+                <span style="color: var(--danger-color); font-weight: 600;">退出管理项目</span>
+                <span style="color: var(--text-muted);">›</span>
+            </div>
+        </div>
+
         <div style="margin-top: 40px; padding: 0 10px;">
             <button class="btn btn-outline" style="border-radius: 20px; font-size: 15px; margin-bottom: 20px;" onclick="App.logout()">退出登录</button>
             <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 30px;">
@@ -121,6 +130,24 @@
             document.getElementById('phoneMask').innerText = p.slice(0,3) + '****' + p.slice(-4);
         }
 
+        function exitProject() {
+            const reason = prompt('请输入退出项目的原因：');
+            if (reason === null) return;
+            if (!reason.trim()) {
+                alert('原因不能为空');
+                return;
+            }
+
+            if (confirm('确定要退出管理项目吗？退出后将无法继续使用本项目提供的所有随访服务。')) {
+                App.savePatientInfo({
+                    enrollStatus: 'exited',
+                    exitReason: reason,
+                    isExited: true
+                });
+                alert('您已退出本项目');
+                App.navigateTo('index.html');
+            }
+        }
     </script>
 </body>
 </html>
