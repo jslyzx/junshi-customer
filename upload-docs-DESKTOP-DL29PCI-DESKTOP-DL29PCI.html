@@ -722,20 +722,11 @@
         <!-- 步骤提示 -->
         <div
             style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 16px; background: var(--primary-soft); border-radius: 16px;">
-            <div class="doc-icon-small" style="font-size: 24px;">🤖</div>
+            <div style="font-size: 24px;">🤖</div>
             <div>
                 <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);">AI 辅助识别</div>
                 <div style="font-size: 12px; color: var(--text-secondary);">拍照上传资料，系统自动识别并填充信息</div>
             </div>
-        </div>
-
-        <!-- 专员授权提示 -->
-        <div id="specialistTip" style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: var(--primary-soft); border-radius: 14px; margin-bottom: 24px;">
-            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                <span style="font-size: 16px;">💡</span>
-                <span style="font-size: 12px; color: var(--text-secondary);">您也可以联系项目专员协助完成资料提交</span>
-            </div>
-            <button class="sm-mini-btn" style="background: var(--primary-color); color: white; border: none; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600;" onclick="authorizeSpecialist()">授权专员</button>
         </div>
 
         <!-- 上传卡片区 -->
@@ -745,15 +736,7 @@
                 上传材料</div>
             <div class="doc-grid">
                 <div class="doc-upload-card" id="card-idcard-front" onclick="triggerUpload('idcard-front')">
-                    <div class="doc-icon" style="background: #E6F0FF;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#007AFF" stroke-width="2"/>
-                            <path d="M7 15C7 13.3431 8.34315 12 10 12C11.6569 12 13 13.3431 13 15" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="10" cy="9" r="2" stroke="#007AFF" stroke-width="2"/>
-                            <line x1="16" y1="9" x2="19" y2="9" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="16" y1="12" x2="19" y2="12" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
+                    <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证正面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
@@ -761,15 +744,7 @@
                         onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-idcard-back" onclick="triggerUpload('idcard-back')">
-                    <div class="doc-icon" style="background: #E6F0FF;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#007AFF" stroke-width="2"/>
-                            <path d="M7 15C7 13.3431 8.34315 12 10 12C11.6569 12 13 13.3431 13 15" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-                            <circle cx="10" cy="9" r="2" stroke="#007AFF" stroke-width="2"/>
-                            <line x1="16" y1="9" x2="19" y2="9" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-                            <line x1="16" y1="12" x2="19" y2="12" stroke="#007AFF" stroke-width="2" stroke-linecap="round"/>
-                        </svg>
-                    </div>
+                    <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证反面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
@@ -887,7 +862,8 @@
             <div class="wx-overlay" id="wxOverlay" onclick="closeWxAuth(event)">
                 <div class="wx-auth-panel" onclick="event.stopPropagation()">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
-                        <img src="https://res.wx.qq.com/a/wx_fed/assets/res/NTI4MWU5.ico" style="width: 20px; height: 20px;">
+                        <img src="https://res.wx.qq.com/a/wx_fed/assets/res/NTI4MWU5.ico"
+                            style="width: 20px; height: 20px;">
                         <span style="font-size: 14px; font-weight: 500; color: #576b95;">微信授权</span>
                     </div>
                     <div class="wx-auth-title" style="text-align: left; font-size: 17px;">申请获取你的手机号</div>
@@ -975,74 +951,6 @@
         const ocrData = {};
 
 
-
-        function authorizeSpecialist() {
-            if (confirm('是否授权项目专员代为上传和完善您的入组资料？\n授权后专员将可以看到您的个人身份信息及就诊资料。')) {
-                const info = App.getPatientInfo() || {};
-                // 模拟授权后的数据填充
-                const mockProfile = {
-                    name: '林建国',
-                    phone: '13812345678',
-                    idCard: '310115199203151234',
-                    gender: '男',
-                    birthDate: '1992-03-15',
-                    disease: '非小细胞肺癌',
-                    stage: 'III期',
-                    hospital: '上海交通大学附属瑞金医院',
-                    medication: 'PD-1 单抗',
-                    followUpPreference: '电话',
-                    treatmentStage: '阶段一',
-                    hasProfile: true,
-                    isSpecialistAuthorized: true
-                };
-                
-                // 模拟自动上传和 OCR 效果
-                document.getElementById('ocrLoading').classList.add('active');
-                document.getElementById('uploadSection').style.opacity = '0.5';
-                document.getElementById('uploadSection').style.pointerEvents = 'none';
-                
-                setTimeout(() => {
-                    document.getElementById('ocrLoading').classList.remove('active');
-                    document.getElementById('ocrResult').classList.add('active');
-                    
-                    // 填充表单
-                    document.getElementById('r-name').value = mockProfile.name;
-                    document.getElementById('r-idcard').value = mockProfile.idCard;
-                    document.getElementById('r-gender').value = mockProfile.gender;
-                    document.getElementById('r-birth').value = mockProfile.birthDate;
-                    document.getElementById('r-disease').value = mockProfile.disease;
-                    document.getElementById('r-stage').value = mockProfile.stage;
-                    document.getElementById('r-hospital').value = mockProfile.hospital;
-                    document.getElementById('r-medication').value = mockProfile.medication;
-                    document.getElementById('r-phone').value = mockProfile.phone;
-                    
-                    // 更新手机号授权状态
-                    const phoneBtn = document.getElementById('phoneAuthBtn');
-                    phoneBtn.classList.add('authorized');
-                    phoneBtn.innerHTML = '✅ 手机号已同步';
-                    phoneAuthorized = true;
-
-                    // 模拟附件已由专员上传
-                    const cards = ['idcard-front', 'idcard-back', 'diagnosis'];
-                    cards.forEach(type => {
-                        const card = document.getElementById('card-' + type);
-                        card.classList.add('uploaded');
-                        card.querySelector('.doc-hint').innerText = '专员已上传 ✓';
-                        uploadedTypes[type] = 'https://api.dicebear.com/7.x/identicon/svg?seed=' + type;
-                        document.getElementById('thumb-' + type).src = uploadedTypes[type];
-                    });
-
-                    document.getElementById('specialistTip').innerHTML = `
-                        <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                            <span style="font-size: 16px;">✅</span>
-                            <span style="font-size: 12px; color: var(--success-color); font-weight: 600;">项目专员已协助完成资料准备，请核对后提交</span>
-                        </div>
-                    `;
-
-                    alert('专员授权成功，已为您同步最新病历资料。请核对信息无误后点击“确认提交”。');
-                }, 1500);
-            }
-        }
 
         // 初始化：填充手机号
         if (patient.phone) {
