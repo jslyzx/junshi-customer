@@ -869,8 +869,18 @@
 
             // 知情同意状态
             const consentText = document.getElementById('myConsentStatusText');
-            if (patient.consentPhoto) {
-                consentText.innerText = patient.consentStatus === 'active' ? '审核中' : '已上传';
+            const hasConsentFile = patient.consentPhoto || (patient.consentPhotos && patient.consentPhotos.length > 0);
+            
+            if (hasConsentFile) {
+                const statusMap = {
+                    'active': '已生效',
+                    'approved': '已通过',
+                    'reviewing': '审核中',
+                    'pending': '审核中',
+                    'rejected': '未通过',
+                    'withdrawn': '已撤回'
+                };
+                consentText.innerText = statusMap[patient.consentStatus] || '已上传';
             } else {
                 consentText.innerText = '待上传';
             }

@@ -654,6 +654,7 @@
             ocrIdCardBack: { validFrom: '2022-03-15', validTo: '2032-03-15' },
             ocrDiagnosis: { disease: '非小细胞肺癌', stage: 'III期', hospital: '上海交通大学附属瑞金医院' },
             ocrConsent: { signDate: '2024-03-24', status: '待审核' },
+            consentPhoto: 'https://images.unsplash.com/photo-1582719478250-c89cae4dc85b?auto=format&fit=crop&q=80&w=2000'
         };
         function fmtDate(days) {
             return new Date(Date.now() + days * 86400000).toISOString().split('T')[0];
@@ -678,6 +679,7 @@
                     isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
                     ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '待审核' },
+                    consentPhoto: DOC_MOCK.consentPhoto,
                     consentStatus: 'reviewing', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
                 }
             },
@@ -687,6 +689,7 @@
                     isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
                     ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '已生效' },
+                    consentPhoto: DOC_MOCK.consentPhoto,
                     consentStatus: 'approved', enrollStatus: 'enrolled', name: '林建国', phone: '13812346789',
                     followUpPlan: {
                         medication: 'PD-1 单抗（特瑞普利单抗）',
@@ -704,6 +707,7 @@
                     isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
                     ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '审核不通过' },
+                    consentPhoto: DOC_MOCK.consentPhoto,
                     consentStatus: 'rejected', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
                 }
             },

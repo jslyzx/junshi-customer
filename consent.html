@@ -215,8 +215,9 @@
         let uploadPages = []; // 当前正在上传的页码
 
         function initConsentPage() {
-            if (patient.consentPhotos && patient.consentPhotos.length > 0 && patient.consentStatus !== 'withdrawn') {
-                photos = patient.consentPhotos;
+            const hasPhotos = (patient.consentPhotos && patient.consentPhotos.length > 0) || patient.consentPhoto;
+            if (hasPhotos && patient.consentStatus !== 'withdrawn') {
+                photos = patient.consentPhotos || [patient.consentPhoto];
                 showManageView();
             } else {
                 showUploadView();
