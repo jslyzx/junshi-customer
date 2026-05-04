@@ -722,23 +722,11 @@
         <!-- 步骤提示 -->
         <div
             style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 16px; background: var(--primary-soft); border-radius: 16px;">
-            <div class="doc-icon-small" style="font-size: 24px;">🤖</div>
+            <div style="font-size: 24px;">🤖</div>
             <div>
                 <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);">AI 辅助识别</div>
                 <div style="font-size: 12px; color: var(--text-secondary);">拍照上传资料，系统自动识别并填充信息</div>
             </div>
-        </div>
-
-        <!-- 专员授权提示 -->
-        <div id="specialistTip"
-            style="display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 14px 16px; background: var(--primary-soft); border-radius: 14px; margin-bottom: 24px;">
-            <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
-                <span style="font-size: 16px;">💡</span>
-                <span style="font-size: 12px; color: var(--text-secondary);">您也可以联系项目专员协助完成资料提交</span>
-            </div>
-            <button class="sm-mini-btn"
-                style="background: var(--primary-color); color: white; border: none; border-radius: 20px; padding: 6px 12px; font-size: 12px; font-weight: 600;"
-                onclick="authorizeSpecialist()">授权专员</button>
         </div>
 
         <!-- 上传卡片区 -->
@@ -748,18 +736,7 @@
                 上传材料</div>
             <div class="doc-grid">
                 <div class="doc-upload-card" id="card-idcard-front" onclick="triggerUpload('idcard-front')">
-                    <div class="doc-icon" style="background: #E6F0FF;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#007AFF" stroke-width="2" />
-                            <path d="M7 15C7 13.3431 8.34315 12 10 12C11.6569 12 13 13.3431 13 15" stroke="#007AFF"
-                                stroke-width="2" stroke-linecap="round" />
-                            <circle cx="10" cy="9" r="2" stroke="#007AFF" stroke-width="2" />
-                            <line x1="16" y1="9" x2="19" y2="9" stroke="#007AFF" stroke-width="2"
-                                stroke-linecap="round" />
-                            <line x1="16" y1="12" x2="19" y2="12" stroke="#007AFF" stroke-width="2"
-                                stroke-linecap="round" />
-                        </svg>
-                    </div>
+                    <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证正面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
@@ -767,18 +744,7 @@
                         onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-idcard-back" onclick="triggerUpload('idcard-back')">
-                    <div class="doc-icon" style="background: #E6F0FF;">
-                        <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <rect x="3" y="5" width="18" height="14" rx="2" stroke="#007AFF" stroke-width="2" />
-                            <path d="M7 15C7 13.3431 8.34315 12 10 12C11.6569 12 13 13.3431 13 15" stroke="#007AFF"
-                                stroke-width="2" stroke-linecap="round" />
-                            <circle cx="10" cy="9" r="2" stroke="#007AFF" stroke-width="2" />
-                            <line x1="16" y1="9" x2="19" y2="9" stroke="#007AFF" stroke-width="2"
-                                stroke-linecap="round" />
-                            <line x1="16" y1="12" x2="19" y2="12" stroke="#007AFF" stroke-width="2"
-                                stroke-linecap="round" />
-                        </svg>
-                    </div>
+                    <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证反面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
@@ -985,26 +951,6 @@
         const ocrData = {};
 
 
-
-        function authorizeSpecialist() {
-            if (confirm('是否授权项目专员代为上传和完善您的入组资料？\n授权后专员将帮您完善您的入组资料。')) {
-                // 直接更新状态并跳转
-                const info = App.getPatientInfo() || {};
-                
-                // 判断是否已经上传了知情同意书
-                const nextStatus = info.consentStatus === 'uploaded' ? 'reviewing' : info.consentStatus;
-                
-                App.savePatientInfo({
-                    hasProfile: true,
-                    enrollStatus: 'reviewing',
-                    consentStatus: nextStatus,
-                    isSpecialistAuthorized: true
-                });
-
-                alert('授权成功！专员将协助您完成后续资料完善。');
-                App.navigateTo('index.html');
-            }
-        }
 
         // 初始化：填充手机号
         if (patient.phone) {
