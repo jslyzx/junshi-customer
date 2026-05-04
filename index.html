@@ -555,10 +555,10 @@
                     <div class="card animate-up"
                         style="animation-delay: 0.4s; background: var(--primary-soft); border: 1px solid rgba(0, 122, 255, 0.2);">
                         <div style="display: flex; align-items: center; gap: 12px;">
-                            <div style="font-size: 24px;">💡</div>
+                            <div style="font-size: 24px;" id="enrollTipIcon">💡</div>
                             <div style="flex: 1;">
-                                <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);">温馨贴士</div>
-                                <div style="font-size: 12px; color: var(--text-secondary);">您的资料已提交审核，专属专员将在1个工作日内完成确认。
+                                <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);" id="enrollTipTitle">温馨贴士</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);" id="enrollTipContent">您的资料已提交审核，专属专员将在1个工作日内完成确认。
                                 </div>
                             </div>
                         </div>
@@ -798,6 +798,14 @@
             } else if (status.isComplete) {
                 document.getElementById('todoSection').classList.add('hidden');
                 document.getElementById('progressSection').classList.remove('hidden');
+
+                // 根据入组状态更新提示
+                if (patient.enrollStatus === 'active' || patient.enrollStatus === 'enrolled') {
+                    document.getElementById('enrollTipIcon').innerText = '🎉';
+                    document.getElementById('enrollTipTitle').innerText = '入组成功';
+                    document.getElementById('enrollTipContent').innerText = '恭喜您已成功入组管理项目，我们将全程为您提供专属随访服务。';
+                    document.getElementById('progressPercent').innerText = '100% 已开启服务';
+                }
             } else {
                 document.getElementById('todoSection').classList.remove('hidden');
                 document.getElementById('progressSection').classList.add('hidden');
