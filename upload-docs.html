@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -7,36 +8,92 @@
     <link rel="stylesheet" href="css/style.css">
     <style>
         .doc-grid {
-            display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 28px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 14px;
+            margin-bottom: 28px;
         }
+
         .doc-upload-card {
-            background: white; border-radius: 20px; padding: 20px 16px;
-            border: 2px dashed rgba(0, 122, 255, 0.15); text-align: center;
-            cursor: pointer; transition: all 0.3s; position: relative; overflow: hidden;
+            background: white;
+            border-radius: 20px;
+            padding: 20px 16px;
+            border: 2px dashed rgba(0, 122, 255, 0.15);
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
         }
-        .doc-upload-card:active { transform: scale(0.96); }
+
+        .doc-upload-card:active {
+            transform: scale(0.96);
+        }
+
         .doc-upload-card.uploaded {
-            border-style: solid; border-color: var(--success-color);
+            border-style: solid;
+            border-color: var(--success-color);
             background: #F0FFF4;
         }
+
         .doc-upload-card .doc-icon {
-            width: 52px; height: 52px; border-radius: 16px; margin: 0 auto 12px;
-            display: flex; align-items: center; justify-content: center; font-size: 24px;
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            margin: 0 auto 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
         }
-        .doc-upload-card .doc-name { font-size: 13px; font-weight: 600; color: var(--text-main); margin-bottom: 4px; }
-        .doc-upload-card .doc-hint { font-size: 11px; color: var(--text-muted); }
+
+        .doc-upload-card .doc-name {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 4px;
+        }
+
+        .doc-upload-card .doc-hint {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
         .doc-upload-card .doc-check {
-            display: none; position: absolute; top: 10px; right: 10px;
-            width: 22px; height: 22px; border-radius: 50%; background: var(--success-color);
-            color: white; font-size: 12px; line-height: 22px; text-align: center;
+            display: none;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--success-color);
+            color: white;
+            font-size: 12px;
+            line-height: 22px;
+            text-align: center;
         }
-        .doc-upload-card.uploaded .doc-check { display: block; }
+
+        .doc-upload-card.uploaded .doc-check {
+            display: block;
+        }
+
         .doc-upload-card .doc-thumb {
-            display: none; width: 100%; height: 60px; object-fit: cover;
-            border-radius: 8px; margin-top: 8px;
+            display: none;
+            width: 100%;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 8px;
         }
-        .doc-upload-card.uploaded .doc-thumb { display: block; }
-        .doc-upload-card.uploaded .doc-hint { color: var(--success-color); }
+
+        .doc-upload-card.uploaded .doc-thumb {
+            display: block;
+        }
+
+        .doc-upload-card.uploaded .doc-hint {
+            color: var(--success-color);
+        }
 
         .option-pill {
             padding: 8px 16px;
@@ -49,6 +106,7 @@
             cursor: pointer;
             transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
+
         .option-pill.active {
             background: var(--primary-color);
             color: white;
@@ -58,233 +116,600 @@
 
         /* OCR 识别动画 */
         .ocr-loading {
-            display: none; text-align: center; padding: 40px 0;
+            display: none;
+            text-align: center;
+            padding: 40px 0;
         }
-        .ocr-loading.active { display: block; }
+
+        .ocr-loading.active {
+            display: block;
+        }
+
         .ocr-spinner {
-            width: 48px; height: 48px; border: 3px solid var(--primary-soft);
-            border-top-color: var(--primary-color); border-radius: 50%;
-            animation: spin 0.8s linear infinite; margin: 0 auto 16px;
+            width: 48px;
+            height: 48px;
+            border: 3px solid var(--primary-soft);
+            border-top-color: var(--primary-color);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 16px;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
 
         /* 识别结果表单 */
-        .ocr-result { display: none; }
-        .ocr-result.active { display: block; }
-        .result-field {
-            display: flex; align-items: center; padding: 14px 0;
-            border-bottom: 0.5px solid rgba(0,0,0,0.05);
+        .ocr-result {
+            display: none;
         }
-        .result-field:last-child { border-bottom: none; }
-        .result-label { width: 90px; font-size: 14px; color: var(--text-muted); flex-shrink: 0; }
+
+        .ocr-result.active {
+            display: block;
+        }
+
+        .result-field {
+            display: flex;
+            align-items: center;
+            padding: 14px 0;
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+        }
+
+        .result-field:last-child {
+            border-bottom: none;
+        }
+
+        .result-label {
+            width: 90px;
+            font-size: 14px;
+            color: var(--text-muted);
+            flex-shrink: 0;
+        }
+
         .result-value {
-            flex: 1; border: none; background: transparent; font-size: 15px;
-            font-weight: 600; color: var(--text-main); outline: none; text-align: right;
+            flex: 1;
+            border: none;
+            background: transparent;
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+            outline: none;
+            text-align: right;
             width: 100%;
         }
-        .result-value:focus { color: var(--primary-color); }
-        .result-auth-link {
-            font-size: 13px; color: #07C160; font-weight: 600; margin-left: 12px;
-            padding: 4px 8px; background: rgba(7, 193, 96, 0.05); border-radius: 6px;
-            cursor: pointer; white-space: nowrap;
+
+        .result-value:focus {
+            color: var(--primary-color);
         }
+
+        .result-auth-link {
+            font-size: 13px;
+            color: #07C160;
+            font-weight: 600;
+            margin-left: 12px;
+            padding: 4px 8px;
+            background: rgba(7, 193, 96, 0.05);
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
         .result-auth-link.authorized {
             display: none;
         }
+
         .result-tag {
-            font-size: 10px; background: var(--primary-soft); color: var(--primary-color);
-            padding: 2px 6px; border-radius: 4px; margin-left: 8px; white-space: nowrap;
+            font-size: 10px;
+            background: var(--primary-soft);
+            color: var(--primary-color);
+            padding: 2px 6px;
+            border-radius: 4px;
+            margin-left: 8px;
+            white-space: nowrap;
         }
 
-        .required-mark { color: var(--danger-color); margin-right: 2px; }
+        .required-mark {
+            color: var(--danger-color);
+            margin-right: 2px;
+        }
 
         /* 微信授权弹窗 */
         .wx-overlay {
-            display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.5); z-index: 9999;
-            justify-content: center; align-items: flex-end;
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            justify-content: center;
+            align-items: flex-end;
         }
-        .wx-overlay.active { display: flex; }
+
+        .wx-overlay.active {
+            display: flex;
+        }
+
         .wx-auth-panel {
-            width: 100%; max-width: 500px; background: white;
-            border-radius: 24px 24px 0 0; padding: 32px 24px calc(24px + env(safe-area-inset-bottom));
+            width: 100%;
+            max-width: 500px;
+            background: white;
+            border-radius: 24px 24px 0 0;
+            padding: 32px 24px calc(24px + env(safe-area-inset-bottom));
             animation: wxSlideUp 0.3s ease-out;
         }
+
         @keyframes wxSlideUp {
-            from { transform: translateY(100%); }
-            to { transform: translateY(0); }
+            from {
+                transform: translateY(100%);
+            }
+
+            to {
+                transform: translateY(0);
+            }
         }
+
         .wx-auth-icon {
-            width: 56px; height: 56px; border-radius: 16px;
-            background: linear-gradient(135deg, #07C160, #06AD56); margin: 0 auto 16px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; color: white;
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            background: linear-gradient(135deg, #07C160, #06AD56);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            color: white;
         }
-        .wx-auth-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
-        .wx-auth-desc { font-size: 13px; color: var(--text-secondary); text-align: center; margin-bottom: 6px; }
+
+        .wx-auth-title {
+            font-size: 18px;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 8px;
+        }
+
+        .wx-auth-desc {
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
         .wx-auth-phone {
-            font-size: 24px; font-weight: 800; text-align: center; letter-spacing: 2px;
-            margin: 16px 0 24px; color: var(--text-main);
+            font-size: 24px;
+            font-weight: 800;
+            text-align: center;
+            letter-spacing: 2px;
+            margin: 16px 0 24px;
+            color: var(--text-main);
         }
+
         .wx-btn-allow {
-            width: 100%; height: 48px; border-radius: 24px; border: none;
-            background: #07C160; color: white; font-size: 16px; font-weight: 600;
-            cursor: pointer; margin-bottom: 12px;
+            width: 100%;
+            height: 48px;
+            border-radius: 24px;
+            border: none;
+            background: #07C160;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-bottom: 12px;
         }
+
         .wx-btn-deny {
-            width: 100%; height: 44px; border-radius: 22px; border: none;
-            background: transparent; color: var(--text-muted); font-size: 14px; cursor: pointer;
+            width: 100%;
+            height: 44px;
+            border-radius: 22px;
+            border: none;
+            background: transparent;
+            color: var(--text-muted);
+            font-size: 14px;
+            cursor: pointer;
         }
+
         .wx-user-info {
-            display: flex; align-items: center; gap: 12px; padding: 16px 0;
-            border-bottom: 0.5px solid rgba(0,0,0,0.05); margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 0;
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.05);
+            margin-bottom: 8px;
         }
-        .wx-avatar { width: 44px; height: 44px; border-radius: 8px; background: #eee; }
-        .wx-nickname { font-size: 15px; font-weight: 600; color: var(--text-main); }
+
+        .wx-avatar {
+            width: 44px;
+            height: 44px;
+            border-radius: 8px;
+            background: #eee;
+        }
+
+        .wx-nickname {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-main);
+        }
+
         .wx-auth-phone-row {
-            display: flex; align-items: center; justify-content: space-between; padding: 16px 0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 0;
         }
-        .wx-check-icon { color: #07C160; font-size: 20px; }
+
+        .wx-check-icon {
+            color: #07C160;
+            font-size: 20px;
+        }
 
         /* 手机号授权按钮样式 */
         .phone-auth-btn {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-            padding: 10px 16px; border-radius: 12px; border: 1.5px dashed rgba(7, 193, 96, 0.3);
-            background: rgba(7, 193, 96, 0.05); cursor: pointer; transition: all 0.2s;
-            font-size: 13px; font-weight: 600; color: #07C160;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 10px 16px;
+            border-radius: 12px;
+            border: 1.5px dashed rgba(7, 193, 96, 0.3);
+            background: rgba(7, 193, 96, 0.05);
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 13px;
+            font-weight: 600;
+            color: #07C160;
         }
-        .phone-auth-btn:active { transform: scale(0.97); background: rgba(7, 193, 96, 0.1); }
+
+        .phone-auth-btn:active {
+            transform: scale(0.97);
+            background: rgba(7, 193, 96, 0.1);
+        }
+
         .phone-auth-btn.authorized {
-            border-style: solid; border-color: var(--success-color);
-            background: #F0FFF4; color: var(--text-main); font-weight: 700;
+            border-style: solid;
+            border-color: var(--success-color);
+            background: #F0FFF4;
+            color: var(--text-main);
+            font-weight: 700;
         }
 
         /* 知情同意书多页上传 */
         .consent-multi-area {
-            margin-top: 14px; padding: 16px; background: white;
-            border-radius: 20px; border: 1px solid #F0F2F5;
+            margin-top: 14px;
+            padding: 16px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #F0F2F5;
         }
+
         .consent-header {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
-        .consent-header-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
-        .consent-count { font-size: 12px; color: var(--text-muted); }
+
+        .consent-header-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .consent-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
         .consent-pages {
-            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px;
-            scrollbar-width: none; -ms-overflow-style: none;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .consent-pages::-webkit-scrollbar { display: none; }
+
+        .consent-pages::-webkit-scrollbar {
+            display: none;
+        }
+
         .consent-page-item {
-            position: relative; flex-shrink: 0; width: 80px; height: 106px;
-            border-radius: 12px; overflow: hidden; border: 1px solid #E5E6EB;
+            position: relative;
+            flex-shrink: 0;
+            width: 80px;
+            height: 106px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #E5E6EB;
             box-shadow: var(--shadow-sm);
         }
+
         .consent-page-item img {
-            width: 100%; height: 100%; object-fit: cover;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
+
         .consent-page-num {
-            position: absolute; bottom: 0; left: 0; right: 0;
-            background: rgba(0,0,0,0.5); color: white; font-size: 10px;
-            text-align: center; padding: 2px 0; font-weight: 600;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 10px;
+            text-align: center;
+            padding: 2px 0;
+            font-weight: 600;
         }
+
         .consent-page-del {
-            position: absolute; top: 4px; right: 4px;
-            width: 20px; height: 20px; border-radius: 50%;
-            background: rgba(0,0,0,0.5); color: white; font-size: 11px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; line-height: 1;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            line-height: 1;
         }
-        .consent-page-del:active { background: var(--danger-color); }
+
+        .consent-page-del:active {
+            background: var(--danger-color);
+        }
+
         .consent-add-btn {
-            flex-shrink: 0; width: 80px; height: 106px; border-radius: 12px;
-            border: 2px dashed rgba(0, 122, 255, 0.2); display: flex;
-            flex-direction: column; align-items: center; justify-content: center;
-            cursor: pointer; gap: 4px; transition: all 0.2s;
+            flex-shrink: 0;
+            width: 80px;
+            height: 106px;
+            border-radius: 12px;
+            border: 2px dashed rgba(0, 122, 255, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            gap: 4px;
+            transition: all 0.2s;
         }
-        .consent-add-btn:active { background: var(--primary-soft); }
-        .consent-add-btn span:first-child { font-size: 22px; color: var(--primary-color); }
-        .consent-add-btn span:last-child { font-size: 10px; color: var(--text-muted); }
+
+        .consent-add-btn:active {
+            background: var(--primary-soft);
+        }
+
+        .consent-add-btn span:first-child {
+            font-size: 22px;
+            color: var(--primary-color);
+        }
+
+        .consent-add-btn span:last-child {
+            font-size: 10px;
+            color: var(--text-muted);
+        }
 
         /* 全屏预览模态框 */
         .viewer-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.9); z-index: 2000;
-            display: none; align-items: center; justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
             backdrop-filter: blur(10px);
         }
-        .viewer-modal.active { display: flex; animation: fadeIn 0.3s ease; }
-        .viewer-img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 8px; }
+
+        .viewer-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .viewer-img {
+            max-width: 95%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
         .viewer-close {
-            position: absolute; top: 40px; right: 25px; width: 44px; height: 44px;
-            background: rgba(255,255,255,0.2); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2010;
+            position: absolute;
+            top: 40px;
+            right: 25px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 2010;
         }
+
         .viewer-nav {
-            position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between;
-            transform: translateY(-50%); padding: 0 20px; pointer-events: none;
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 20px;
+            pointer-events: none;
         }
+
         .viewer-nav-btn {
-            width: 50px; height: 50px; background: rgba(255,255,255,0.1); color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; pointer-events: auto; backdrop-filter: blur(5px);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
         }
+
         .viewer-info {
-            position: absolute; bottom: 40px; left: 0; right: 0; text-align: center;
-            color: white; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
 
         /* 随访计划弹窗样式 */
         .plan-modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.6); z-index: 3000;
-            display: none; align-items: center; justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 3000;
+            display: none;
+            align-items: center;
+            justify-content: center;
             backdrop-filter: blur(5px);
         }
-        .plan-modal-overlay.active { display: flex; }
-        
-        .plan-card {
-            width: 85%; max-width: 360px; background: white; border-radius: 32px;
-            overflow: hidden; animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
-        @keyframes modalPop {
-            from { transform: scale(0.8); opacity: 0; }
-            to { transform: scale(1); opacity: 1; }
+
+        .plan-modal-overlay.active {
+            display: flex;
         }
 
-        .plan-loading-content { padding: 40px 24px; text-align: center; }
-        .plan-loading-icon { width: 80px; height: 80px; margin: 0 auto 24px; }
+        .plan-card {
+            width: 85%;
+            max-width: 360px;
+            background: white;
+            border-radius: 32px;
+            overflow: hidden;
+            animation: modalPop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        @keyframes modalPop {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .plan-loading-content {
+            padding: 40px 24px;
+            text-align: center;
+        }
+
+        .plan-loading-icon {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 24px;
+        }
+
         .plan-progress-container {
-            width: 100%; height: 12px; background: #F0F2F5; border-radius: 6px;
-            margin: 20px 0; overflow: hidden; position: relative;
+            width: 100%;
+            height: 12px;
+            background: #F0F2F5;
+            border-radius: 6px;
+            margin: 20px 0;
+            overflow: hidden;
+            position: relative;
         }
+
         .plan-progress-bar {
-            width: 0%; height: 100%; background: var(--primary-gradient);
-            border-radius: 6px; transition: width 0.1s linear;
+            width: 0%;
+            height: 100%;
+            background: var(--primary-gradient);
+            border-radius: 6px;
+            transition: width 0.1s linear;
         }
-        .plan-progress-text { font-size: 14px; font-weight: 700; color: var(--primary-color); }
+
+        .plan-progress-text {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--primary-color);
+        }
 
         .plan-result-header {
-            background: var(--primary-gradient); padding: 32px 24px; text-align: center; color: white;
+            background: var(--primary-gradient);
+            padding: 32px 24px;
+            text-align: center;
+            color: white;
         }
-        .plan-result-body { padding: 24px; max-height: 400px; overflow-y: auto; }
+
+        .plan-result-body {
+            padding: 24px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
         .plan-task-item {
-            display: flex; gap: 14px; margin-bottom: 20px;
+            display: flex;
+            gap: 14px;
+            margin-bottom: 20px;
         }
+
         .plan-task-icon {
-            width: 40px; height: 40px; border-radius: 12px; display: flex;
-            align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
         }
-        .plan-task-info { flex: 1; }
-        .plan-task-title { font-size: 15px; font-weight: 700; color: var(--text-main); }
-        .plan-task-time { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-        
+
+        .plan-task-info {
+            flex: 1;
+        }
+
+        .plan-task-title {
+            font-size: 15px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .plan-task-time {
+            font-size: 12px;
+            color: var(--text-muted);
+            margin-top: 2px;
+        }
+
         .plan-edu-item {
-            padding: 12px; background: #F8FAFF; border-radius: 12px;
-            margin-top: 8px; font-size: 13px; color: var(--primary-color);
-            display: flex; align-items: center; gap: 8px;
+            padding: 12px;
+            background: #F8FAFF;
+            border-radius: 12px;
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
     </style>
 </head>
+
 <body>
     <div class="bg-blob blob-1"></div>
 
@@ -295,7 +720,8 @@
 
     <div class="container animate-up">
         <!-- 步骤提示 -->
-        <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 16px; background: var(--primary-soft); border-radius: 16px;">
+        <div
+            style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px; padding: 16px; background: var(--primary-soft); border-radius: 16px;">
             <div style="font-size: 24px;">🤖</div>
             <div>
                 <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);">AI 辅助识别</div>
@@ -305,21 +731,25 @@
 
         <!-- 上传卡片区 -->
         <div id="uploadSection">
-            <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px;">上传材料</div>
+            <div
+                style="font-size: 13px; font-weight: 600; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 1px;">
+                上传材料</div>
             <div class="doc-grid">
                 <div class="doc-upload-card" id="card-idcard-front" onclick="triggerUpload('idcard-front')">
                     <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证正面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-idcard-front" onclick="event.stopPropagation(); openViewer(this.src)">
+                    <img class="doc-thumb" id="thumb-idcard-front"
+                        onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-idcard-back" onclick="triggerUpload('idcard-back')">
                     <div class="doc-icon" style="background: #E6F0FF;">🪪</div>
                     <div class="doc-name">身份证反面</div>
                     <div class="doc-hint">必传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-idcard-back" onclick="event.stopPropagation(); openViewer(this.src)">
+                    <img class="doc-thumb" id="thumb-idcard-back"
+                        onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
                 <div class="doc-upload-card" id="card-diagnosis" onclick="triggerUpload('diagnosis')">
                     <div class="doc-icon" style="background: #FFF2E6;">📋</div>
@@ -333,7 +763,8 @@
                     <div class="doc-name">处方单</div>
                     <div class="doc-hint">选传 · 拍照上传</div>
                     <div class="doc-check">✓</div>
-                    <img class="doc-thumb" id="thumb-prescription" onclick="event.stopPropagation(); openViewer(this.src)">
+                    <img class="doc-thumb" id="thumb-prescription"
+                        onclick="event.stopPropagation(); openViewer(this.src)">
                 </div>
             </div>
             <input type="file" id="fileInput" hidden accept="image/*" capture="environment">
@@ -351,7 +782,8 @@
         <!-- 识别结果 -->
         <div class="ocr-result" id="ocrResult">
             <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px;">
-                <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px;">识别结果</div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px;">识别结果
+                </div>
                 <span class="result-tag">AI 已识别 · 可修改</span>
             </div>
             <div class="form-section" style="padding: 4px 16px;">
@@ -392,17 +824,22 @@
                 <div class="result-field">
                     <span class="result-label">随访偏好</span>
                     <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
-                        <button class="option-pill active" style="padding: 4px 12px; font-size: 12px;" onclick="selectPref(this)">电话</button>
-                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;" onclick="selectPref(this)">微信</button>
+                        <button class="option-pill active" style="padding: 4px 12px; font-size: 12px;"
+                            onclick="selectPref(this)">电话</button>
+                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;"
+                            onclick="selectPref(this)">微信</button>
                     </div>
                     <input type="hidden" id="r-pref" value="电话">
                 </div>
                 <div class="result-field">
                     <span class="result-label">治疗阶段</span>
                     <div style="display: flex; gap: 8px; flex: 1; justify-content: flex-end;">
-                        <button class="option-pill active" style="padding: 4px 12px; font-size: 12px;" onclick="selectTreatStage(this)">阶段一</button>
-                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;" onclick="selectTreatStage(this)">阶段二</button>
-                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;" onclick="selectTreatStage(this)">阶段三</button>
+                        <button class="option-pill active" style="padding: 4px 12px; font-size: 12px;"
+                            onclick="selectTreatStage(this)">阶段一</button>
+                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;"
+                            onclick="selectTreatStage(this)">阶段二</button>
+                        <button class="option-pill" style="padding: 4px 12px; font-size: 12px;"
+                            onclick="selectTreatStage(this)">阶段三</button>
                     </div>
                     <input type="hidden" id="r-treat-stage" value="阶段一">
                 </div>
@@ -415,7 +852,8 @@
                 </div>
                 <div class="result-field" onclick="showWxAuth()">
                     <span class="result-label"><span class="required-mark">*</span>手机号</span>
-                    <input type="tel" class="result-value" id="r-phone" value="" readonly maxlength="11" style="padding-right:0">
+                    <input type="tel" class="result-value" id="r-phone" value="" readonly maxlength="11"
+                        style="padding-right:0">
                     <span class="result-auth-link" id="phoneAuthBtn">点击授权</span>
                 </div>
             </div>
@@ -424,12 +862,14 @@
             <div class="wx-overlay" id="wxOverlay" onclick="closeWxAuth(event)">
                 <div class="wx-auth-panel" onclick="event.stopPropagation()">
                     <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 20px;">
-                        <img src="https://res.wx.qq.com/a/static/ad_p_center/ad_p_center/image/common/logo_wechat.png" style="width: 20px; height: 20px;">
+                        <img src="https://res.wx.qq.com/a/wx_fed/assets/res/NTI4MWU5.ico"
+                            style="width: 20px; height: 20px;">
                         <span style="font-size: 14px; font-weight: 500; color: #576b95;">微信授权</span>
                     </div>
                     <div class="wx-auth-title" style="text-align: left; font-size: 17px;">申请获取你的手机号</div>
-                    <div class="wx-auth-desc" style="text-align: left; margin-top: 4px; margin-bottom: 20px;">用于同步项目进度及随访通知</div>
-                    
+                    <div class="wx-auth-desc" style="text-align: left; margin-top: 4px; margin-bottom: 20px;">
+                        用于同步项目进度及随访通知</div>
+
                     <div class="wx-user-info">
                         <img class="wx-avatar" src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix">
                         <div class="wx-nickname">微信用户</div>
@@ -441,8 +881,10 @@
                     </div>
 
                     <div style="display: flex; gap: 12px; margin-top: 32px;">
-                        <button class="btn" style="background: #F2F2F2; color: #07C160; width: 40%;" onclick="closeWxAuth()">拒绝</button>
-                        <button class="btn" style="background: #07C160; color: white; flex: 1;" onclick="confirmWxAuth()">允许</button>
+                        <button class="btn" style="background: #F2F2F2; color: #07C160; width: 40%;"
+                            onclick="closeWxAuth()">拒绝</button>
+                        <button class="btn" style="background: #07C160; color: white; flex: 1;"
+                            onclick="confirmWxAuth()">允许</button>
                     </div>
                 </div>
             </div>
@@ -470,7 +912,8 @@
         <div class="plan-card">
             <div class="plan-loading-content">
                 <div class="plan-loading-icon">
-                    <img src="https://img.icons8.com/color/96/pill.png" style="width: 100%; height: 100%; object-fit: contain;">
+                    <img src="https://img.icons8.com/color/96/pill.png"
+                        style="width: 100%; height: 100%; object-fit: contain;">
                 </div>
                 <div style="font-size: 18px; font-weight: 800; color: var(--text-main);">提交成功</div>
                 <div style="font-size: 14px; color: var(--text-secondary); margin-top: 8px;">请稍后，正在为您定制专属学习计划</div>
@@ -494,7 +937,8 @@
                 <!-- 动态填充 -->
             </div>
             <div style="padding: 20px 24px;">
-                <button class="btn btn-primary" style="width: 100%;" onclick="App.navigateTo('index.html')">开启管理服务</button>
+                <button class="btn btn-primary" style="width: 100%;"
+                    onclick="App.navigateTo('index.html')">开启管理服务</button>
             </div>
         </div>
     </div>
@@ -525,17 +969,17 @@
         }
 
         // 普通材料上传
-        document.getElementById('fileInput').addEventListener('change', function() {
+        document.getElementById('fileInput').addEventListener('change', function () {
             if (!this.files[0]) return;
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 const dataUrl = e.target.result;
                 const card = document.getElementById('card-' + currentUploadType);
                 card.classList.add('uploaded');
                 card.querySelector('.doc-hint').innerText = '已上传 ✓';
                 document.getElementById('thumb-' + currentUploadType).src = dataUrl;
                 uploadedTypes[currentUploadType] = dataUrl;
-                
+
                 // 身份证正面、诊断证明、处方单均触发 OCR
                 if (currentUploadType === 'idcard-front' || currentUploadType === 'diagnosis' || currentUploadType === 'prescription') {
                     runOCR(currentUploadType);
@@ -630,6 +1074,11 @@
                 return;
             }
 
+            const currentInfo = App.getPatientInfo();
+            // 如果知情同意书已经上传，则完善资料后正式触发审核
+            const isConsentUploaded = currentInfo.consentStatus === 'uploaded' || (currentInfo.consentPhotos && currentInfo.consentPhotos.length);
+            const nextStatus = isConsentUploaded ? 'reviewing' : currentInfo.consentStatus;
+
             // 保存所有信息
             App.savePatientInfo({
                 name,
@@ -649,8 +1098,14 @@
                 ocrPrescription: !!uploadedTypes['prescription'],
                 isRegistered: true,
                 hasProfile: true,
-                consentStatus: 'reviewing'
+                consentStatus: nextStatus
             });
+
+            if (nextStatus === 'reviewing') {
+                alert('资料提交成功，已触发入组审核');
+            } else {
+                alert('个人病历已保存，请尽快上传知情同意书以开启审核');
+            }
 
             startPlanGeneration();
         }
@@ -659,14 +1114,14 @@
             const loadingModal = document.getElementById('planLoadingModal');
             const progressBar = document.getElementById('planProgressBar');
             const progressText = document.getElementById('planProgressPercent');
-            
+
             loadingModal.classList.add('active');
-            
+
             let progress = 0;
             const duration = 2000; // 2 seconds
             const interval = 20;
             const step = 100 / (duration / interval);
-            
+
             const timer = setInterval(() => {
                 progress += step;
                 if (progress >= 100) {
@@ -682,11 +1137,11 @@
         function showPlanResult() {
             const med = document.getElementById('r-medication').value;
             const plan = App.generateFollowUpPlan(med);
-            
+
             document.getElementById('planLoadingModal').classList.remove('active');
             const resultModal = document.getElementById('planResultModal');
             const taskList = document.getElementById('planTaskList');
-            
+
             taskList.innerHTML = `
                 <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 16px;">计划任务清单</div>
                 ${plan.tasks.map(task => `
@@ -708,7 +1163,7 @@
                     </div>
                 `).join('')}
             `;
-            
+
             resultModal.classList.add('active');
         }
 
@@ -739,4 +1194,5 @@
         }
     </script>
 </body>
+
 </html>

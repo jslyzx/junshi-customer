@@ -181,6 +181,11 @@
             const diagnosisDate = document.getElementById('diagnosisDate').value;
             if (!diagnosis || !diagnosisDate) { alert('请填写核心诊断信息'); return; }
             
+            const currentInfo = App.getPatientInfo();
+            // 如果知情同意书已经上传，则完善资料后正式触发审核
+            const isConsentUploaded = currentInfo.consentStatus === 'uploaded' || (currentInfo.consentPhotos && currentInfo.consentPhotos.length);
+            const nextStatus = isConsentUploaded ? 'reviewing' : currentInfo.consentStatus;
+
             App.savePatientInfo({
                 diagnosis,
                 stage: document.getElementById('stage').value,
@@ -189,8 +194,14 @@
                 followUpPreference: document.getElementById('followUpPreference').value,
                 treatmentStage: document.getElementById('treatmentStage').value,
                 hasProfile: true,
-                consentStatus: 'pending'
+                consentStatus: nextStatus
             });
+
+            if (nextStatus === 'reviewing') {
+                alert('建档成功！资料已提交审核');
+            } else {
+                alert('病历资料已保存');
+            }
             App.navigateTo('index.html');
         }
     </script>

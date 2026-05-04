@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -17,11 +18,21 @@
             position: relative;
             overflow: hidden;
         }
-        .upload-area:active { background: var(--primary-soft); transform: scale(0.98); }
-        .upload-area i { font-size: 48px; margin-bottom: 16px; display: block; }
-        
+
+        .upload-area:active {
+            background: var(--primary-soft);
+            transform: scale(0.98);
+        }
+
+        .upload-area i {
+            font-size: 48px;
+            margin-bottom: 16px;
+            display: block;
+        }
+
         .image-preview-container {
-            width: 100%; height: 400px;
+            width: 100%;
+            height: 400px;
             border-radius: 24px;
             overflow: hidden;
             border: 1px solid var(--glass-border);
@@ -29,93 +40,260 @@
             position: relative;
             background: #000;
         }
-        .image-preview-container img { width: 100%; height: 100%; object-fit: contain; }
-        
-        .status-header {
-            padding: 20px; border-radius: 20px; margin-bottom: 24px;
-            display: flex; align-items: center; gap: 15px;
+
+        .image-preview-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
         }
-        .status-header.pending { background: linear-gradient(135deg, #FFF9E6 0%, #FFF2CC 100%); color: #B28B00; }
-        .status-header.success { background: linear-gradient(135deg, #E6F9EA 0%, #CEF1D6 100%); color: #1E7D32; }
-        .status-header.withdrawn { background: linear-gradient(135deg, #FFF1F0 0%, #FFD8D6 100%); color: #CF1322; }
+
+        .status-header {
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 24px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .status-header.pending {
+            background: linear-gradient(135deg, #FFF9E6 0%, #FFF2CC 100%);
+            color: #B28B00;
+        }
+
+        .status-header.uploaded {
+            background: linear-gradient(135deg, #E6F0FF 0%, #D1E3FF 100%);
+            color: #0052D9;
+        }
+
+        .status-header.success {
+            background: linear-gradient(135deg, #E6F9EA 0%, #CEF1D6 100%);
+            color: #1E7D32;
+        }
+
+        .status-header.withdrawn {
+            background: linear-gradient(135deg, #FFF1F0 0%, #FFD8D6 100%);
+            color: #CF1322;
+        }
 
         .image-nav {
-            position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between; transform: translateY(-50%); padding: 0 10px; pointer-events: none;
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 10px;
+            pointer-events: none;
         }
+
         .nav-btn {
-            width: 36px; height: 36px; background: rgba(0,0,0,0.4); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 18px; cursor: pointer;
-            backdrop-filter: blur(4px); pointer-events: auto;
+            width: 36px;
+            height: 36px;
+            background: rgba(0, 0, 0, 0.4);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            cursor: pointer;
+            backdrop-filter: blur(4px);
+            pointer-events: auto;
         }
+
         .page-indicator {
-            position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%);
-            background: rgba(0,0,0,0.5); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px;
+            position: absolute;
+            bottom: 15px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 12px;
         }
 
         /* 知情同意书多页上传样式 */
         .consent-multi-area {
-            margin-top: 14px; padding: 16px; background: white;
-            border-radius: 20px; border: 1px solid #F0F2F5;
+            margin-top: 14px;
+            padding: 16px;
+            background: white;
+            border-radius: 20px;
+            border: 1px solid #F0F2F5;
         }
+
         .consent-header {
-            display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
-        .consent-header-title { font-size: 14px; font-weight: 700; color: var(--text-main); }
-        .consent-count { font-size: 12px; color: var(--text-muted); }
+
+        .consent-header-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+
+        .consent-count {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
         .consent-pages {
-            display: flex; gap: 10px; overflow-x: auto; padding-bottom: 8px;
-            scrollbar-width: none; -ms-overflow-style: none;
+            display: flex;
+            gap: 10px;
+            overflow-x: auto;
+            padding-bottom: 8px;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
-        .consent-pages::-webkit-scrollbar { display: none; }
+
+        .consent-pages::-webkit-scrollbar {
+            display: none;
+        }
+
         .consent-page-item {
-            position: relative; width: 80px; height: 110px; border-radius: 12px; overflow: hidden; flex-shrink: 0;
-            border: 1px solid #EBEDF0; box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            position: relative;
+            width: 80px;
+            height: 110px;
+            border-radius: 12px;
+            overflow: hidden;
+            flex-shrink: 0;
+            border: 1px solid #EBEDF0;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
-        .consent-page-item img { width: 100%; height: 100%; object-fit: cover; }
+
+        .consent-page-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
         .consent-page-num {
-            position: absolute; bottom: 0; left: 0; right: 0; background: rgba(0,0,0,0.5);
-            color: white; font-size: 10px; text-align: center; padding: 2px 0;
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.5);
+            color: white;
+            font-size: 10px;
+            text-align: center;
+            padding: 2px 0;
         }
+
         .consent-page-del {
-            position: absolute; top: 4px; right: 4px; width: 18px; height: 18px;
-            background: rgba(255,59,48,0.9); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 10px;
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 18px;
+            height: 18px;
+            background: rgba(255, 59, 48, 0.9);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
         }
+
         .consent-add-btn {
-            width: 80px; height: 110px; border-radius: 12px; border: 1.5px dashed #C7C7CC;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            color: #8E8E93; gap: 6px; flex-shrink: 0; background: #F2F2F7;
+            width: 80px;
+            height: 110px;
+            border-radius: 12px;
+            border: 1.5px dashed #C7C7CC;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #8E8E93;
+            gap: 6px;
+            flex-shrink: 0;
+            background: #F2F2F7;
         }
 
         /* 全屏预览模态框 */
         .viewer-modal {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.9); z-index: 2000;
-            display: none; align-items: center; justify-content: center;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.9);
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            justify-content: center;
             backdrop-filter: blur(10px);
         }
-        .viewer-modal.active { display: flex; animation: fadeIn 0.3s ease; }
-        .viewer-img { max-width: 95%; max-height: 85%; object-fit: contain; border-radius: 8px; }
+
+        .viewer-modal.active {
+            display: flex;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .viewer-img {
+            max-width: 95%;
+            max-height: 85%;
+            object-fit: contain;
+            border-radius: 8px;
+        }
+
         .viewer-close {
-            position: absolute; top: 40px; right: 25px; width: 44px; height: 44px;
-            background: rgba(255,255,255,0.2); color: white; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-size: 24px; z-index: 2010;
+            position: absolute;
+            top: 40px;
+            right: 25px;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            z-index: 2010;
         }
+
         .viewer-nav {
-            position: absolute; top: 50%; width: 100%; display: flex; justify-content: space-between;
-            transform: translateY(-50%); padding: 0 20px; pointer-events: none;
+            position: absolute;
+            top: 50%;
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            transform: translateY(-50%);
+            padding: 0 20px;
+            pointer-events: none;
         }
+
         .viewer-nav-btn {
-            width: 50px; height: 50px; background: rgba(255,255,255,0.1); color: white;
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            font-size: 30px; pointer-events: auto; backdrop-filter: blur(5px);
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            pointer-events: auto;
+            backdrop-filter: blur(5px);
         }
+
         .viewer-info {
-            position: absolute; bottom: 40px; left: 0; right: 0; text-align: center;
-            color: white; font-size: 14px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+            position: absolute;
+            bottom: 40px;
+            left: 0;
+            right: 0;
+            text-align: center;
+            color: white;
+            font-size: 14px;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
     </style>
 </head>
+
 <body>
     <div class="bg-blob blob-1"></div>
     <div class="header">
@@ -131,14 +309,14 @@
                 <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
                     临床试验需要您签署纸质《知情同意书》，请将所有签署页拍照并在此处上传。
                 </p>
-                
+
                 <div class="upload-area" id="mainUploadBtn" onclick="document.getElementById('fileInput').click()">
                     <span style="font-size: 50px; display: block; margin-bottom: 15px;">📄</span>
                     <div style="font-weight: 700; color: var(--primary-color); font-size: 18px;">点击拍摄或上传</div>
                     <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">支持多页连续上传</p>
                 </div>
                 <input type="file" id="fileInput" hidden accept="image/*" onchange="previewImage(this)">
-                
+
                 <!-- 多页预览区域 -->
                 <div id="consentMultiArea" class="consent-multi-area" style="display: none;">
                     <div class="consent-header">
@@ -150,8 +328,9 @@
                     </div>
                 </div>
             </div>
-            
-            <button class="btn btn-primary" id="submitBtn" disabled onclick="submitConsent()" style="margin-top: 10px;">确认提交审核</button>
+
+            <button class="btn btn-primary" id="submitBtn" disabled onclick="submitConsent()"
+                style="margin-top: 10px;">下一步：完善个人信息</button>
         </div>
 
         <!-- 详情视图 -->
@@ -173,9 +352,11 @@
                         <div class="nav-btn" onclick="switchPage(1)">›</div>
                     </div>
                     <div id="pageIndicator" class="page-indicator">第 1 / 1 页</div>
-                    <div style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; padding: 4px 12px; border-radius: 10px; font-size: 12px; backdrop-filter: blur(5px);">签署副本</div>
+                    <div
+                        style="position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; padding: 4px 12px; border-radius: 10px; font-size: 12px; backdrop-filter: blur(5px);">
+                        签署副本</div>
                 </div>
-                
+
                 <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
                         <div style="font-size: 12px; color: var(--text-muted);">文件状态</div>
@@ -195,7 +376,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- 图片预览模态框 -->
     <div id="imageViewer" class="viewer-modal" onclick="closeViewer()">
         <div class="viewer-close">✕</div>
@@ -234,7 +415,7 @@
             document.getElementById('manageView').classList.remove('hidden');
             updateImageView();
             document.getElementById('infoTime').innerText = patient.consentDate || App.formatDate(new Date());
-            
+
             const banner = document.getElementById('statusBanner');
             if (patient.consentStatus === 'approved' || patient.consentStatus === 'active') {
                 banner.className = 'status-header success';
@@ -246,6 +427,11 @@
                 document.getElementById('statusTitle').innerText = '已撤回知情';
                 document.getElementById('statusDesc').innerText = `撤回原因：${patient.consentWithdrawReason || '无'}`;
                 document.getElementById('infoStatus').innerText = '已失效';
+            } else if (patient.consentStatus === 'uploaded') {
+                banner.className = 'status-header uploaded';
+                document.getElementById('statusTitle').innerText = '已上传';
+                document.getElementById('statusDesc').innerText = '请完善个人资料以触发最终审核';
+                document.getElementById('infoStatus').innerText = '待激活';
             } else {
                 banner.className = 'status-header pending';
                 document.getElementById('statusTitle').innerText = '审核中';
@@ -301,7 +487,7 @@
             const container = document.getElementById('consentPagesList');
             const area = document.getElementById('consentMultiArea');
             const mainBtn = document.getElementById('mainUploadBtn');
-            
+
             if (uploadPages.length > 0) {
                 area.style.display = 'block';
                 mainBtn.style.display = 'none'; // 上传多页后隐藏主按钮，使用列表中的添加按钮
@@ -317,7 +503,7 @@
                     <div class="consent-page-del" onclick="event.stopPropagation(); removeUploadPage(${i})">✕</div>
                 </div>
             `).join('');
-            
+
             html += `
                 <div class="consent-add-btn" onclick="document.getElementById('fileInput').click()">
                     <span>+</span>
@@ -338,14 +524,23 @@
         }
 
         function submitConsent() {
+            const patientInfo = App.getPatientInfo();
+            const nextStatus = patientInfo.hasProfile ? 'reviewing' : 'uploaded';
+
             App.savePatientInfo({
                 consentPhotos: uploadPages,
-                consentStatus: 'reviewing',
-                ocrConsent: true, // 记录已上传状态
+                consentStatus: nextStatus,
+                ocrConsent: true,
                 consentDate: App.formatDate(new Date())
             });
-            alert('知情同意书已提交，请等待审核');
-            App.navigateTo('index.html');
+
+            if (nextStatus === 'reviewing') {
+                alert('知情同意书已提交，资料审核中');
+                App.navigateTo('index.html');
+            } else {
+                alert('知情同意书已上传，请继续完善个人信息');
+                App.navigateTo('upload-docs.html');
+            }
         }
 
         function withdrawConsent() {
@@ -396,4 +591,5 @@
         initConsentPage();
     </script>
 </body>
+
 </html>
