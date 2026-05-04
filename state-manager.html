@@ -426,17 +426,17 @@
             <div class="field-row">
                 <span class="field-label">医生姓名</span>
                 <div class="field-right"><input class="sm-text-input" id="input-docname" placeholder="王晓雅"
-                        oninput="SM.setNested('doctor.name',this.value)" /></div>
+                        oninput="SM.setNested('boundDoctor.name',this.value)" /></div>
             </div>
             <div class="field-row">
                 <span class="field-label">所在医院</span>
                 <div class="field-right"><input class="sm-text-input" id="input-dochos" placeholder="南京鼓楼医院"
-                        oninput="SM.setNested('doctor.hospital',this.value)" /></div>
+                        oninput="SM.setNested('boundDoctor.hospital',this.value)" /></div>
             </div>
             <div class="field-row">
                 <span class="field-label">科室</span>
                 <div class="field-right"><input class="sm-text-input" id="input-docdept" placeholder="肿瘤科"
-                        oninput="SM.setNested('doctor.dept',this.value)" /></div>
+                        oninput="SM.setNested('boundDoctor.dept',this.value)" /></div>
             </div>
         </div>
 
@@ -670,12 +670,12 @@
             { id: 'fresh', label: '全新用户', desc: '刚扫码，未绑定任何信息', color: '#8E8E93', data: null },
             {
                 id: 'bound', label: '已绑定医生', desc: '完成扫码绑定，未建档', color: '#007AFF',
-                data: { isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' } }
+                data: { isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' } }
             },
             {
                 id: 'profiled', label: '已完成建档', desc: '资料全部上传，待审核', color: '#FF9500',
                 data: {
-                    isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
                     ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '待审核' },
                     consentStatus: 'reviewing', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
@@ -684,7 +684,7 @@
             {
                 id: 'enrolled', label: '已入组', desc: '审核通过，随访计划已生成', color: '#34C759',
                 data: {
-                    isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
                     ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '已生效' },
                     consentStatus: 'approved', enrollStatus: 'enrolled', name: '林建国', phone: '13812346789',
@@ -701,7 +701,7 @@
             {
                 id: 'consent_rejected', label: '知情同意被退回', desc: '上传的知情同意书审核不通过', color: '#FF3B30',
                 data: {
-                    isBound: true, doctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,
                     ocrDiagnosis: DOC_MOCK.ocrDiagnosis, ocrConsent: { signDate: '2024-03-24', status: '审核不通过' },
                     consentStatus: 'rejected', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
@@ -788,7 +788,7 @@
                 const dotC = (v, t, f) => v ? t : f;
                 document.getElementById('dot-bind').style.background = isBound ? '#34C759' : '#E5E5EA';
                 document.getElementById('ov-bind').style.color = isBound ? '#34C759' : '#8E8E93';
-                document.getElementById('ov-bind').textContent = isBound ? (data.doctor?.name || '已绑定') : '未绑定';
+                document.getElementById('ov-bind').textContent = isBound ? (data.boundDoctor?.name || data.doctor?.name || '已绑定') : '未绑定';
                 const dc2 = dc === 4 ? '#34C759' : dc > 0 ? '#FF9500' : '#E5E5EA';
                 document.getElementById('dot-doc').style.background = dc2;
                 document.getElementById('ov-doc').style.color = dc === 4 ? '#34C759' : dc > 0 ? '#FF9500' : '#8E8E93';

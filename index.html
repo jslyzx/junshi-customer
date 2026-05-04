@@ -765,12 +765,13 @@
             }
 
             // 医生信息显隐切换
-            if (patient.boundDoctor) {
+            const doctor = patient.boundDoctor || patient.doctor;
+            if (doctor) {
                 document.getElementById('doctorCard').style.display = 'flex';
                 document.getElementById('bindDoctorPrompt').style.display = 'none';
-                document.getElementById('homeDocAvatar').src = patient.boundDoctor.avatar;
-                document.getElementById('homeDocName').innerText = patient.boundDoctor.name + ' 主任医师';
-                document.getElementById('homeDocInfo').innerText = `${patient.boundDoctor.hospital} | ${patient.boundDoctor.dept}`;
+                document.getElementById('homeDocAvatar').src = doctor.avatar || 'https://api.dicebear.com/7.x/avataaars/svg?seed=Felix';
+                document.getElementById('homeDocName').innerText = (doctor.name || '绑定医生') + ' 主任医师';
+                document.getElementById('homeDocInfo').innerText = `${doctor.hospital || '---'} | ${doctor.dept || '---'}`;
             } else {
                 document.getElementById('doctorCard').style.display = 'none';
                 document.getElementById('bindDoctorPrompt').style.display = 'flex';
