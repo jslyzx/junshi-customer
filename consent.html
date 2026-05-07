@@ -432,6 +432,11 @@
                 document.getElementById('statusTitle').innerText = '已上传';
                 document.getElementById('statusDesc').innerText = '请完善个人资料以触发最终审核';
                 document.getElementById('infoStatus').innerText = '待激活';
+            } else if (patient.consentStatus === 'withdraw_reviewing') {
+                banner.className = 'status-header pending';
+                document.getElementById('statusTitle').innerText = '撤回申请中';
+                document.getElementById('statusDesc').innerText = '专员正在处理您的撤回申请，请耐心等待';
+                document.getElementById('infoStatus').innerText = '处理中';
             } else {
                 banner.className = 'status-header pending';
                 document.getElementById('statusTitle').innerText = '审核中';
@@ -445,7 +450,7 @@
             }
 
             // 添加撤回按钮
-            if (patient.consentStatus !== 'withdrawn') {
+            if (patient.consentStatus !== 'withdrawn' && patient.consentStatus !== 'withdraw_reviewing') {
                 const actionArea = document.getElementById('manageView');
                 if (!document.getElementById('withdrawBtn')) {
                     const btn = document.createElement('button');
@@ -544,20 +549,20 @@
         }
 
         function withdrawConsent() {
-            const reason = prompt('请输入撤回知情同意的原因：');
-            if (reason === null) return;
-            if (!reason.trim()) {
-                alert('原因不能为空');
-                return;
-            }
+            if (confirm('是否提交撤回知情同意申请？')) {
+                const reason = prompt('请输入撤回知情同意的理由：');
+                if (reason === null) return;
+                if (!reason.trim()) {
+                    alert('理由不能为空');
+                    return;
+                }
 
-            if (confirm('确定要撤回知情同意吗？撤回后将无法享受项目相关服务。')) {
                 App.savePatientInfo({
-                    consentStatus: 'withdrawn',
-                    consentWithdrawReason: reason,
-                    enrollStatus: 'withdrawn'
+                    consentStatus: 'withdraw_reviewing',
+                    consentWithdrawReason: reason
                 });
-                alert('知情同意已撤回');
+
+                alert('您的请求已收到，请等待专员与您联系');
                 location.reload();
             }
         }

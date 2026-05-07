@@ -711,6 +711,21 @@
                     consentStatus: 'rejected', enrollStatus: 'pending', name: '林建国', phone: '13812346789'
                 }
             },
+            {
+                id: 'complaint_replied', label: '有投诉回复', desc: '模拟患者收到随访中心的投诉处理结果', color: '#AF52DE',
+                data: {
+                    isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
+                    name: '林建国', phone: '13812346789',
+                    complaints: [
+                        {
+                            target: '项目专员',
+                            content: '专员最近回复消息越来越慢了，希望可以改进一下服务态度。',
+                            date: '2026-05-01 10:00:00',
+                            reply: '感谢您的反馈！我们已核实相关情况，并对该专员进行了服务质量面谈与话术培训。后续我们将加强考核，确保沟通效率，祝您生活愉快。'
+                        }
+                    ]
+                }
+            },
         ];
         const SM = {
             _rawErr: false, _rawVis: false, _timer: null,

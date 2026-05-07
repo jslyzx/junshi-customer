@@ -77,6 +77,81 @@
             display: none;
         }
         .select-item.active .radio-circle::after { display: block; }
+
+        .history-title {
+            font-size: 15px;
+            font-weight: 700;
+            margin: 40px 0 16px;
+            display: flex;
+            align-items: center;
+        }
+        .history-title::before {
+            content: '';
+            width: 4px; height: 16px;
+            background: var(--primary-color);
+            border-radius: 2px;
+            margin-right: 8px;
+        }
+
+        .complaint-item {
+            background: white;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 16px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            border: 1px solid rgba(0,0,0,0.02);
+        }
+        .complaint-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+        .complaint-target {
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .complaint-status {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            font-weight: 600;
+        }
+        .status-pending { background: #FFF9E6; color: #FFB300; }
+        .status-replied { background: #E6F7FF; color: #1890FF; }
+
+        .complaint-body {
+            font-size: 13px;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 12px;
+        }
+        .complaint-date {
+            font-size: 11px;
+            color: #C1C1C7;
+        }
+
+        .reply-box {
+            margin-top: 12px;
+            padding: 12px;
+            background: #F8F9FF;
+            border-radius: 12px;
+            border-left: 3px solid var(--primary-color);
+        }
+        .reply-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 4px;
+            display: flex;
+            align-items: center;
+        }
+        .reply-content {
+            font-size: 13px;
+            color: var(--text-main);
+            line-height: 1.5;
+        }
     </style>
 </head>
 <body>
@@ -95,41 +170,95 @@
             </div>
         </div>
 
-        <div class="form-label">请选择投诉对象</div>
-        <div class="select-list">
-            <div class="select-item" onclick="selectObject(this, '随访中心')">
-                <span style="font-weight: 600;">随访中心</span>
-                <div class="radio-circle"></div>
+        <!-- 投诉表单 -->
+        <div id="complaintFormArea">
+            <div class="form-label">请选择投诉对象</div>
+            <div class="select-list">
+                <div class="select-item" onclick="selectObject(this, '随访中心')">
+                    <span style="font-weight: 600;">随访中心</span>
+                    <div class="radio-circle"></div>
+                </div>
+                <div class="select-item" onclick="selectObject(this, '项目专员')">
+                    <span style="font-weight: 600;">项目专员</span>
+                    <div class="radio-circle"></div>
+                </div>
+                <div class="select-item" onclick="selectObject(this, '其他建议')">
+                    <span style="font-weight: 600;">其他建议</span>
+                    <div class="radio-circle"></div>
+                </div>
             </div>
-            <div class="select-item" onclick="selectObject(this, '项目专员')">
-                <span style="font-weight: 600;">项目专员</span>
-                <div class="radio-circle"></div>
+
+            <div class="form-label">投诉内容描述</div>
+            <div class="card" style="padding: 16px; border-radius: 20px;">
+                <textarea id="complaintContent" placeholder="请详细描述您遇到的问题，以便我们更好地为您跟进解决..." style="width: 100%; border: none; font-family: inherit; font-size: 14px; outline: none; min-height: 120px; resize: none;"></textarea>
             </div>
-            <div class="select-item" onclick="selectObject(this, '其他')">
-                <span style="font-weight: 600;">其他建议</span>
-                <div class="radio-circle"></div>
+
+            <div style="margin-top: 32px; padding: 0 10px;">
+                <button class="btn btn-primary" onclick="submitComplaint()">提交投诉</button>
             </div>
         </div>
 
-        <div class="form-label">投诉内容描述</div>
-        <div class="card" style="padding: 16px; border-radius: 20px;">
-            <textarea id="complaintContent" placeholder="请详细描述您遇到的问题，以便我们更好地为您跟进解决..." style="width: 100%; border: none; font-family: inherit; font-size: 14px; outline: none; min-height: 120px; resize: none;"></textarea>
+        <!-- 历史记录 -->
+        <div id="historyArea">
+            <div class="history-title">历史投诉</div>
+            <div id="complaintList">
+                <!-- 投诉列表将通过 JS 渲染 -->
+            </div>
         </div>
 
-        <div style="margin-top: 40px; padding: 0 10px;">
-            <button class="btn btn-primary" onclick="submitComplaint()">提交投诉</button>
-            <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin-top: 20px;">* 提交后，项目组将在 1-3 个工作日内给予回复</p>
-        </div>
+        <p style="text-align: center; font-size: 12px; color: var(--text-muted); margin: 30px 0 20px;">* 提交后，项目组将在 1-3 个工作日内给予回复</p>
     </div>
 
     <script src="js/app.js"></script>
     <script>
         let selectedObject = '';
 
+        window.onload = function() {
+            renderComplaints();
+        }
+
         function selectObject(el, obj) {
             document.querySelectorAll('.select-item').forEach(item => item.classList.remove('active'));
             el.classList.add('active');
             selectedObject = obj;
+        }
+
+        function renderComplaints() {
+            const p = App.getPatientInfo();
+            const complaints = p.complaints || [];
+            const listEl = document.getElementById('complaintList');
+            
+            if (complaints.length === 0) {
+                listEl.innerHTML = `
+                    <div style="text-align: center; padding: 40px 0; color: #C1C1C7;">
+                        <div style="font-size: 40px; margin-bottom: 10px; opacity: 0.5;">📋</div>
+                        <div style="font-size: 13px;">暂无投诉记录</div>
+                    </div>
+                `;
+                return;
+            }
+
+            listEl.innerHTML = complaints.map(c => `
+                <div class="complaint-item">
+                    <div class="complaint-header">
+                        <span class="complaint-target">投诉对象：${c.target}</span>
+                        <span class="complaint-status ${c.reply ? 'status-replied' : 'status-pending'}">
+                            ${c.reply ? '已回复' : '处理中'}
+                        </span>
+                    </div>
+                    <div class="complaint-body">${c.content}</div>
+                    <div class="complaint-date">${c.date}</div>
+                    
+                    ${c.reply ? `
+                        <div class="reply-box animate-scale">
+                            <div class="reply-title">
+                                <span style="margin-right: 4px;">💬</span> 随访中心回复
+                            </div>
+                            <div class="reply-content">${c.reply}</div>
+                        </div>
+                    ` : ''}
+                </div>
+            `).join('');
         }
 
         function submitComplaint() {
@@ -143,19 +272,29 @@
                 return;
             }
 
-            // 保存投诉记录
             const p = App.getPatientInfo();
             const complaints = p.complaints || [];
-            complaints.unshift({
+            
+            // 为了演示方便，如果投诉内容包含特定的关键词，模拟自动回复（或者在这里模拟被管理员回复的状态）
+            const newComplaint = {
                 target: selectedObject,
                 content: content,
-                date: new Date().toLocaleString()
-            });
+                date: new Date().toLocaleString(),
+                reply: null // 初始无回复
+            };
 
+            complaints.unshift(newComplaint);
             App.savePatientInfo({ complaints });
 
             alert('提交成功！我们将尽快为您处理。');
-            history.back();
+            
+            // 清空表单
+            document.getElementById('complaintContent').value = '';
+            document.querySelectorAll('.select-item').forEach(item => item.classList.remove('active'));
+            selectedObject = '';
+            
+            // 重新渲染
+            renderComplaints();
         }
     </script>
 </body>

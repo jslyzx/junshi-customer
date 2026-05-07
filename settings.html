@@ -131,20 +131,19 @@
         }
 
         function exitProject() {
-            const reason = prompt('请输入退出项目的原因：');
-            if (reason === null) return;
-            if (!reason.trim()) {
-                alert('原因不能为空');
-                return;
-            }
+            if (confirm('是否提交退出管理项目申请？')) {
+                const reason = prompt('请输入退出项目的原因：');
+                if (reason === null) return;
+                if (!reason.trim()) {
+                    alert('原因不能为空');
+                    return;
+                }
 
-            if (confirm('确定要退出管理项目吗？退出后将无法继续使用本项目提供的所有随访服务。')) {
                 App.savePatientInfo({
-                    enrollStatus: 'exited',
-                    exitReason: reason,
-                    isExited: true
+                    consentStatus: 'withdraw_reviewing',
+                    exitReason: reason
                 });
-                alert('您已退出本项目');
+                alert('您的退出请求已收到，请等待专员与您联系');
                 App.navigateTo('index.html');
             }
         }

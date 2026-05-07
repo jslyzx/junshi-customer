@@ -494,26 +494,47 @@
                             <span style="font-size: 16px;">💡</span>
                             <span style="font-size: 12px; color: var(--text-secondary);">您也可以联系项目专员协助完成资料提交</span>
                         </div>
-                        <button class="sm-mini-btn" style="background: var(--primary-color); color: white; border: none; border-radius: 20px; padding: 6px 12px;" onclick="authorizeSpecialist()">授权专员</button>
+                        <button class="sm-mini-btn"
+                            style="background: var(--primary-color); color: white; border: none; border-radius: 20px; padding: 6px 12px;"
+                            onclick="authorizeSpecialist()">授权专员</button>
                     </div>
                 </div>
 
                 <!-- 管理进度区（建档完成后显示） -->
                 <div id="progressSection" class="hidden">
                     <!-- 快捷上报区 -->
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px;">
-                        <div class="card" style="margin-bottom: 0; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02);" onclick="App.navigateTo('report-status.html')">
-                            <div style="width: 44px; height: 44px; border-radius: 14px; background: #E6F7FF; display: flex; align-items: center; justify-content: center; font-size: 24px;">💊</div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px;">
+                        <div class="card"
+                            style="margin-bottom: 0; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02); text-align: center;"
+                            onclick="App.navigateTo('report-status.html')">
+                            <div
+                                style="width: 40px; height: 40px; border-radius: 12px; background: #E6F7FF; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                💊</div>
                             <div>
-                                <div style="font-size: 15px; font-weight: 700;">用药状态</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">主动上报近况</div>
+                                <div style="font-size: 13px; font-weight: 700;">用药状态</div>
+                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">主动上报</div>
                             </div>
                         </div>
-                        <div class="card" style="margin-bottom: 0; padding: 16px; display: flex; align-items: center; gap: 12px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02);" onclick="App.navigateTo('report-symptoms.html')">
-                            <div style="width: 44px; height: 44px; border-radius: 14px; background: #FFF1F0; display: flex; align-items: center; justify-content: center; font-size: 24px;">🤮</div>
+                        <div class="card"
+                            style="margin-bottom: 0; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02); text-align: center;"
+                            onclick="App.navigateTo('report-symptoms.html')">
+                            <div
+                                style="width: 40px; height: 40px; border-radius: 12px; background: #FFF1F0; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                🤮</div>
                             <div>
-                                <div style="font-size: 15px; font-weight: 700;">不适上报</div>
-                                <div style="font-size: 11px; color: var(--text-muted); margin-top: 2px;">记录身体反应</div>
+                                <div style="font-size: 13px; font-weight: 700;">不适上报</div>
+                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">记录反应</div>
+                            </div>
+                        </div>
+                        <div class="card"
+                            style="margin-bottom: 0; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 8px; cursor: pointer; border: 1px solid rgba(0,0,0,0.02); text-align: center;"
+                            onclick="App.navigateTo('report-material.html')">
+                            <div
+                                style="width: 40px; height: 40px; border-radius: 12px; background: #F6FFED; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                📄</div>
+                            <div>
+                                <div style="font-size: 13px; font-weight: 700;">资料上传</div>
+                                <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">化验单等</div>
                             </div>
                         </div>
                     </div>
@@ -557,8 +578,10 @@
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div style="font-size: 24px;" id="enrollTipIcon">💡</div>
                             <div style="flex: 1;">
-                                <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);" id="enrollTipTitle">温馨贴士</div>
-                                <div style="font-size: 12px; color: var(--text-secondary);" id="enrollTipContent">您的资料已提交审核，专属专员将在1个工作日内完成确认。
+                                <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);"
+                                    id="enrollTipTitle">温馨贴士</div>
+                                <div style="font-size: 12px; color: var(--text-secondary);" id="enrollTipContent">
+                                    您的资料已提交审核，专属专员将在1个工作日内完成确认。
                                 </div>
                             </div>
                         </div>
@@ -570,7 +593,7 @@
                     <div
                         style="display: flex; align-items: center; justify-content: space-between; margin: 24px 4px 12px;">
                         <div style="font-size: 13px; font-weight: 600; color: var(--text-muted); letter-spacing: 1px;">
-                            管理计划清单</div>
+                            服务计划清单</div>
                         <div style="font-size: 12px; color: var(--primary-color); font-weight: 600; cursor: pointer;"
                             onclick="App.navigateTo('plans.html')">全部计划 ›</div>
                     </div>
@@ -690,7 +713,8 @@
                         </div>
                         <span style="color: var(--text-muted);">›</span>
                     </div>
-                    <div class="list-item" style="padding: 18px 24px; border-top: 1px solid rgba(0,0,0,0.04);" onclick="location.href='complaint.html'">
+                    <div class="list-item" style="padding: 18px 24px; border-top: 1px solid rgba(0,0,0,0.04);"
+                        onclick="location.href='complaint.html'">
                         <div style="display:flex; align-items:center; gap: 15px;">
                             <span style="font-size: 18px;">📢</span>
                             <span style="font-weight: 500;">意见与投诉</span>
@@ -782,7 +806,7 @@
                 document.getElementById('todoSection').classList.add('hidden');
                 document.getElementById('progressSection').classList.add('hidden');
                 document.getElementById('planSection').classList.add('hidden');
-                
+
                 // 显示退出提示
                 const todo = document.getElementById('todoSection');
                 todo.classList.remove('hidden');
@@ -870,7 +894,7 @@
             // 知情同意状态
             const consentText = document.getElementById('myConsentStatusText');
             const hasConsentFile = patient.consentPhoto || (patient.consentPhotos && patient.consentPhotos.length > 0);
-            
+
             if (hasConsentFile) {
                 const statusMap = {
                     'active': '已生效',
