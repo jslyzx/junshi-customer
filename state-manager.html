@@ -449,7 +449,7 @@
                     <span class="sm-badge badge-gray" id="badge-enroll">未开始</span>
                     <select class="sm-select" id="sel-enroll" onchange="SM.setNested('enrollStatus',this.value)">
                         <option value="">未开始</option>
-                        <option value="pending">资料审核中</option>
+                        <option value="pending">资料已上传</option>
                         <option value="enrolled">已入组</option>
                         <option value="rejected">审核未通过</option>
                         <option value="withdrawn">已撤回</option>
@@ -641,11 +641,11 @@
         const STORAGE_KEY = 'patient_info';
         const STATUS_META = {
             '': { cls: 'badge-gray', label: '未开始' },
-            pending: { cls: 'badge-orange', label: '审核中' },
+            pending: { cls: 'badge-blue', label: '已上传' },
             enrolled: { cls: 'badge-green', label: '已入组' },
             rejected: { cls: 'badge-red', label: '未通过' },
             approved: { cls: 'badge-green', label: '已通过' },
-            reviewing: { cls: 'badge-blue', label: '审核中' },
+            reviewing: { cls: 'badge-blue', label: '已上传' },
             withdrawn: { cls: 'badge-red', label: '已撤回' },
             exited: { cls: 'badge-red', label: '已退出项目' },
         };
@@ -674,7 +674,7 @@
                 data: { isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' } }
             },
             {
-                id: 'profiled', label: '已完成建档', desc: '资料全部上传，待审核', color: '#FF9500',
+                id: 'profiled', label: '已完成建档', desc: '资料全部上传，管理已开启', color: '#34C759',
                 data: {
                     isBound: true, boundDoctor: { id: 'D001', name: '王晓雅', hospital: '南京鼓楼医院', dept: '肿瘤科' },
                     ocrIdCard: DOC_MOCK.ocrIdCard, ocrIdCardBack: DOC_MOCK.ocrIdCardBack,

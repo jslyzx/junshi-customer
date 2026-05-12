@@ -72,8 +72,8 @@ const App = {
         const info = this.getPatientInfo();
         if (!info) return { isBound: false, hasIdCard: false, hasDiagnosis: false, hasConsent: false };
         
-        // 只有 approved 或 active 才算完成知情
-        const hasConsent = info.consentStatus === 'approved' || info.consentStatus === 'active';
+        // 现在不需要审核，只要上传了（reviewing/pending）或者已生效（approved/active）都算完成知情
+        const hasConsent = ['approved', 'active', 'reviewing', 'pending', 'uploaded'].includes(info.consentStatus);
         
         return {
             isBound: !!info.isBound,
@@ -81,7 +81,7 @@ const App = {
             hasIdCardBack: !!info.ocrIdCardBack,
             hasDiagnosis: !!info.ocrDiagnosis,
             hasConsent: hasConsent,
-            isReviewing: info.consentStatus === 'reviewing',
+            isReviewing: false, // 不再显示审核中状态
             isWithdrawn: info.consentStatus === 'withdrawn',
             isExited: !!info.isExited || info.enrollStatus === 'exited',
             isComplete: !!info.ocrIdCard && !!info.ocrIdCardBack && !!info.ocrDiagnosis && hasConsent

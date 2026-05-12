@@ -606,8 +606,8 @@
             <div id="statusBanner" class="status-header">
                 <div style="font-size: 24px;">⏳</div>
                 <div>
-                    <div style="font-weight: 800; font-size: 16px;" id="statusTitle">审核中</div>
-                    <div style="font-size: 12px; opacity: 0.8;" id="statusDesc">预计在 24 小时内完成审核</div>
+                    <div style="font-weight: 800; font-size: 16px;" id="statusTitle">已上传</div>
+                    <div style="font-size: 12px; opacity: 0.8;" id="statusDesc">您的知情同意书已存档生效</div>
                 </div>
             </div>
 
@@ -628,7 +628,7 @@
                 <div style="margin-top: 24px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
                         <div style="font-size: 12px; color: var(--text-muted);">文件状态</div>
-                        <div id="infoStatus" style="font-weight: 600;">待生效</div>
+                        <div id="infoStatus" style="font-weight: 600;">已签署</div>
                     </div>
                     <div>
                         <div style="font-size: 12px; color: var(--text-muted);">提交日期</div>
@@ -721,10 +721,10 @@
                 document.getElementById('statusDesc').innerText = '专员正在处理您的撤回申请，请耐心等待';
                 document.getElementById('infoStatus').innerText = '处理中';
             } else {
-                banner.className = 'status-header pending';
-                document.getElementById('statusTitle').innerText = '审核中';
-                document.getElementById('statusDesc').innerText = '预计在 24 小时内完成审核';
-                document.getElementById('infoStatus').innerText = '待生效';
+                banner.className = 'status-header success';
+                document.getElementById('statusTitle').innerText = '已上传';
+                document.getElementById('statusDesc').innerText = '您的知情同意书已存档生效';
+                document.getElementById('infoStatus').innerText = '已签署';
             }
 
             if (photos.length <= 1) {
@@ -884,8 +884,7 @@
         }
 
         function submitConsent() {
-            const patientInfo = App.getPatientInfo();
-            const nextStatus = patientInfo.hasProfile ? 'reviewing' : 'uploaded';
+            const nextStatus = 'active'; // 上传即生效
 
             let updateData = {
                 consentMethod: currentMode,
@@ -919,8 +918,8 @@
 
             App.savePatientInfo(updateData);
 
-            if (nextStatus === 'reviewing') {
-                alert('知情同意书已提交，资料审核中');
+            if (nextStatus === 'active') {
+                alert('知情同意书已提交，管理服务已开启');
                 App.navigateTo('index.html');
             } else {
                 alert('知情同意书已提交，请继续完善个人信息');

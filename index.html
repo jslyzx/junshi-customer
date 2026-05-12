@@ -769,7 +769,7 @@
                                 <div style="font-size: 14px; font-weight: 600; color: var(--primary-color);"
                                     id="enrollTipTitle">温馨贴士</div>
                                 <div style="font-size: 12px; color: var(--text-secondary);" id="enrollTipContent">
-                                    您的资料已提交审核，专属专员将在1个工作日内完成确认。
+                                    您的资料已上传成功，管理服务已为您开启。
                                 </div>
                             </div>
                         </div>
@@ -1054,15 +1054,8 @@
                 if (status.hasConsent) {
                     consentCard.classList.add('completed');
                     document.getElementById('taskConsentIcon').innerText = '✅';
-                    document.getElementById('taskConsentTitle').innerText = '知情同意已通过';
+                    document.getElementById('taskConsentTitle').innerText = '知情同意已完成';
                     consentCard.onclick = null;
-                } else if (status.isReviewing) {
-                    consentCard.classList.add('completed');
-                    consentCard.style.background = '#F0F7FF';
-                    consentCard.style.borderColor = 'rgba(0, 122, 255, 0.1)';
-                    document.getElementById('taskConsentIcon').innerText = '⏳';
-                    document.getElementById('taskConsentTitle').innerText = '知情同意审核中';
-                    document.getElementById('taskConsentSub').innerText = '医生正在核对资料，请稍候';
                 } else if (status.isWithdrawn) {
                     document.getElementById('taskConsentIcon').innerText = '🚫';
                     document.getElementById('taskConsentTitle').innerText = '知情同意已撤回';
@@ -1114,8 +1107,8 @@
                 const statusMap = {
                     'active': '已生效',
                     'approved': '已通过',
-                    'reviewing': '审核中',
-                    'pending': '审核中',
+                    'reviewing': '已上传',
+                    'pending': '已上传',
                     'rejected': '未通过',
                     'withdrawn': '已撤回'
                 };
