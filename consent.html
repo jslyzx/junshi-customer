@@ -38,7 +38,7 @@
             border: 1px solid var(--glass-border);
             box-shadow: var(--shadow-lg);
             position: relative;
-            background: #000;
+            background: #f5f5f7;
         }
 
         .image-preview-container img {
@@ -898,7 +898,15 @@
                     alert('请先完成手写签名');
                     return;
                 }
-                updateData.consentSignatureImg = canvas.toDataURL('image/png');
+                // 创建临时画布以添加白色背景，解决透明 PNG 在某些渲染环境下显示为黑块的问题
+                const tempCanvas = document.createElement('canvas');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+                const tCtx = tempCanvas.getContext('2d');
+                tCtx.fillStyle = '#ffffff';
+                tCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                tCtx.drawImage(canvas, 0, 0);
+                updateData.consentSignatureImg = tempCanvas.toDataURL('image/png');
                 updateData.ocrConsent = true;
             } else {
                 if (uploadPages.length === 0) {
