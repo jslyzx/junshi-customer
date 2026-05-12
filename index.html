@@ -422,6 +422,194 @@
             background: rgba(255, 59, 48, 0.1);
             color: #FF3B30;
         }
+
+        /* 授权确认模态框 */
+        .auth-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(6px);
+            padding: 20px;
+        }
+
+        .auth-modal-overlay.active {
+            display: flex;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .auth-modal {
+            width: 100%;
+            max-width: 380px;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            animation: modalSlideUp 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes modalSlideUp {
+            from {
+                transform: translateY(30px) scale(0.95);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0) scale(1);
+                opacity: 1;
+            }
+        }
+
+        .auth-modal-header {
+            padding: 24px 24px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .auth-modal-header-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #E6F0FF, #D1E3FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            flex-shrink: 0;
+        }
+
+        .auth-modal-title {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .auth-modal-body {
+            padding: 0 24px 20px;
+        }
+
+        .auth-modal-warning {
+            background: #FFF8F0;
+            border: 1px solid #FFE0B2;
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #8D6E2F;
+        }
+
+        .auth-modal-warning strong {
+            color: #B8860B;
+        }
+
+        .auth-modal-confirm-hint {
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+            line-height: 1.5;
+        }
+
+        .auth-modal-confirm-hint .confirm-text {
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        .auth-modal-input {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1.5px solid #E5E7EB;
+            border-radius: 12px;
+            font-size: 15px;
+            color: var(--text-main);
+            outline: none;
+            transition: border-color 0.2s;
+            box-sizing: border-box;
+        }
+
+        .auth-modal-input:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+        }
+
+        .auth-modal-input.error {
+            border-color: #FF3B30;
+            box-shadow: 0 0 0 3px rgba(255, 59, 48, 0.1);
+            animation: shake 0.4s ease;
+        }
+
+        @keyframes shake {
+
+            0%,
+            100% {
+                transform: translateX(0);
+            }
+
+            20%,
+            60% {
+                transform: translateX(-4px);
+            }
+
+            40%,
+            80% {
+                transform: translateX(4px);
+            }
+        }
+
+        .auth-modal-footer {
+            display: flex;
+            gap: 12px;
+            padding: 0 24px 24px;
+        }
+
+        .auth-modal-footer .btn-cancel {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 600;
+            background: #F5F5F7;
+            color: var(--text-secondary);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-modal-footer .btn-cancel:active {
+            background: #EBEBED;
+            transform: scale(0.97);
+        }
+
+        .auth-modal-footer .btn-confirm {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 15px;
+            font-weight: 700;
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .auth-modal-footer .btn-confirm:disabled {
+            background: #C7C7CC;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        .auth-modal-footer .btn-confirm:not(:disabled):active {
+            transform: scale(0.97);
+            background: #0066D6;
+        }
     </style>
 </head>
 
@@ -623,7 +811,7 @@
         </section>
 
         <!-- Tab 3: 咨询 -->
-        <section id="tab-consult" class="tab-content hidden" style="position: relative;">
+        <!-- <section id="tab-consult" class="tab-content hidden" style="position: relative;">
             <div class="header">
                 <h1 id="consultTitle">AI 智能顾问</h1>
                 <div id="humanStatus"
@@ -642,7 +830,7 @@
                 <button class="btn btn-primary" style="width: 70px; height: 44px; border-radius: 14px;"
                     onclick="sendMessage()">发送</button>
             </div>
-        </section>
+        </section> -->
 
         <!-- Tab 4: 消息 -->
         <section id="tab-message" class="tab-content hidden">
@@ -749,10 +937,10 @@
                 <span class="tab-icon">📚</span>
                 <span>教育</span>
             </a>
-            <a href="#" class="tab-item" onclick="switchTab('consult', event)">
+            <!-- <a href="#" class="tab-item" onclick="switchTab('consult', event)">
                 <span class="tab-icon">💬</span>
                 <span>咨询</span>
-            </a>
+            </a> -->
             <a href="#" class="tab-item" onclick="switchTab('message', event)">
                 <span class="tab-icon">🔔</span>
                 <span>消息</span>
@@ -762,6 +950,32 @@
                 <span>我的</span>
             </a>
         </nav>
+    </div>
+
+    <!-- 授权确认模态框 -->
+    <div id="authModal" class="auth-modal-overlay" onclick="closeAuthModal(event)">
+        <div class="auth-modal" onclick="event.stopPropagation()">
+            <div class="auth-modal-header">
+                <div class="auth-modal-header-icon">🤝</div>
+                <div class="auth-modal-title">授权项目专员</div>
+            </div>
+            <div class="auth-modal-body">
+                <div class="auth-modal-warning">
+                    <strong>· 授权后</strong>，项目专员将代为上传知情同意书及相关建档资料。<br>
+                    <strong>· 专员可查看</strong>您的基本信息以完成入组建档。<br>
+                    <strong>· 您可随时</strong>联系专员了解资料处理进度。
+                </div>
+                <div class="auth-modal-confirm-hint">
+                    请输入 <span class="confirm-text">确认授权</span> 以完成授权操作
+                </div>
+                <input type="text" class="auth-modal-input" id="authConfirmInput" placeholder="请输入上方文字"
+                    autocomplete="off" oninput="checkAuthInput()">
+            </div>
+            <div class="auth-modal-footer">
+                <button class="btn-cancel" onclick="closeAuthModal()">取消</button>
+                <button class="btn-confirm" id="authConfirmBtn" disabled onclick="confirmAuthorize()">确认授权</button>
+            </div>
+        </div>
     </div>
 
     <!-- 悬浮联系专员按钮 -->
@@ -1123,13 +1337,47 @@
         });
 
         function authorizeSpecialist() {
-            if (confirm('您是否授权项目专员代为上传知情同意书及相关建档资料？授权后专员将可以协助您完善信息。')) {
-                App.savePatientInfo({
-                    specialistAuthorized: true,
-                    specialistAuthDate: App.formatDate(new Date())
-                });
-                alert('授权成功！项目专员将尽快为您处理。');
-                location.reload();
+            document.getElementById('authModal').classList.add('active');
+            document.getElementById('authConfirmInput').value = '';
+            document.getElementById('authConfirmBtn').disabled = true;
+            document.getElementById('authConfirmInput').classList.remove('error');
+            setTimeout(() => document.getElementById('authConfirmInput').focus(), 300);
+        }
+
+        function closeAuthModal(e) {
+            if (e && e.target !== e.currentTarget) return;
+            document.getElementById('authModal').classList.remove('active');
+        }
+
+        function checkAuthInput() {
+            const input = document.getElementById('authConfirmInput');
+            const btn = document.getElementById('authConfirmBtn');
+            input.classList.remove('error');
+            btn.disabled = input.value.trim() !== '确认授权';
+        }
+
+        function confirmAuthorize() {
+            const input = document.getElementById('authConfirmInput');
+            if (input.value.trim() !== '确认授权') {
+                input.classList.add('error');
+                return;
+            }
+            App.savePatientInfo({
+                specialistAuthorized: true,
+                specialistAuthDate: App.formatDate(new Date())
+            });
+            document.getElementById('authModal').classList.remove('active');
+            // 用轻量提示替代 alert
+            const tip = document.getElementById('specialistTip');
+            if (tip) {
+                tip.style.background = '#E6F9EA';
+                tip.style.borderColor = 'rgba(30, 125, 50, 0.1)';
+                tip.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 10px; flex: 1;">
+                        <span style="font-size: 16px;">✅</span>
+                        <span style="font-size: 12px; color: #1E7D32;">已授权专员协助，请等待资料更新</span>
+                    </div>
+                `;
             }
         }
 
