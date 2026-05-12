@@ -894,8 +894,9 @@
             // 知情同意状态
             const consentText = document.getElementById('myConsentStatusText');
             const hasConsentFile = patient.consentPhoto || (patient.consentPhotos && patient.consentPhotos.length > 0);
+            const hasEsign = patient.consentMethod === 'esign' && patient.consentSignatureImg;
 
-            if (hasConsentFile) {
+            if (hasConsentFile || hasEsign) {
                 const statusMap = {
                     'active': '已生效',
                     'approved': '已通过',
@@ -904,7 +905,9 @@
                     'rejected': '未通过',
                     'withdrawn': '已撤回'
                 };
-                consentText.innerText = statusMap[patient.consentStatus] || '已上传';
+                let statusText = statusMap[patient.consentStatus] || '已上传';
+                let methodText = patient.consentMethod === 'esign' ? '电子签名' : '图片上传';
+                consentText.innerText = `${statusText}（${methodText}）`;
             } else {
                 consentText.innerText = '待上传';
             }

@@ -291,6 +291,75 @@
             font-size: 14px;
             text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
         }
+
+        /* 模式切换器 */
+        .segment-control {
+            display: flex;
+            background: rgba(118, 118, 128, 0.12);
+            border-radius: 8px;
+            padding: 2px;
+            margin-bottom: 20px;
+        }
+
+        .segment-item {
+            flex: 1;
+            text-align: center;
+            padding: 6px 0;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .segment-item.active {
+            background: white;
+            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.12), 0 3px 1px rgba(0, 0, 0, 0.04);
+        }
+
+        /* 电子签名区域 */
+        .consent-doc-view {
+            height: 250px;
+            overflow-y: auto;
+            background: #F9FAFB;
+            border: 1px solid #E5E7EB;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 13px;
+            line-height: 1.6;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .signature-area {
+            border: 2px dashed rgba(0, 122, 255, 0.3);
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.5);
+            margin-bottom: 10px;
+            position: relative;
+            touch-action: none;
+            /* 防止页面滚动 */
+        }
+
+        .signature-canvas {
+            width: 100%;
+            height: 150px;
+            border-radius: 12px;
+        }
+
+        .clear-sign-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 12px;
+            color: var(--text-muted);
+            background: rgba(0, 0, 0, 0.05);
+            padding: 4px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+        }
     </style>
 </head>
 
@@ -305,31 +374,230 @@
         <!-- 上传视图 -->
         <div id="uploadView">
             <div class="card" style="border:none">
-                <div class="card-title">提交知情同意书</div>
-                <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
-                    临床试验需要您签署纸质《知情同意书》，请将所有签署页拍照并在此处上传。
-                </p>
+                <div class="card-title">签署知情同意书</div>
 
-                <div class="upload-area" id="mainUploadBtn" onclick="document.getElementById('fileInput').click()">
-                    <span style="font-size: 50px; display: block; margin-bottom: 15px;">📄</span>
-                    <div style="font-weight: 700; color: var(--primary-color); font-size: 18px;">点击拍摄或上传</div>
-                    <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">支持多页连续上传</p>
+                <div class="segment-control">
+                    <div class="segment-item active" onclick="switchSignMode('esign')" id="tab-esign">📝 电子签名</div>
+                    <div class="segment-item" onclick="switchSignMode('upload')" id="tab-upload">📷 上传图片</div>
                 </div>
-                <input type="file" id="fileInput" hidden accept="image/*" onchange="previewImage(this)">
 
-                <!-- 多页预览区域 -->
-                <div id="consentMultiArea" class="consent-multi-area" style="display: none;">
-                    <div class="consent-header">
-                        <span class="consent-header-title">已添加页码</span>
-                        <span class="consent-count" id="consentCount">已上传 0 页</span>
+                <!-- 电子签名模式 -->
+                <div id="esignMode">
+                    <div class="consent-doc-view">
+                        <h3 style="text-align: center; margin-bottom: 10px;">“益+同行”患者关爱项目知情同意书及个人信息处理授权书</h3>
+                        <p>尊敬的患者/监护人：</p>
+                        <p>您好！感谢您了解并考虑参加本项目。为保障您的知情权、选择权和个人信息权益，请您在决定是否参加本项目前，仔细阅读本知情同意书及个人信息处理授权书。如您对任何内容有疑问，请在签署前向项目人员提出，项目人员将向您解释本项目的服务内容、服务边界、个人信息处理规则及您的相关权利。
+                        </p>
+                        <p>您签署本文件并完成相应勾选，即表示您已充分知悉并自愿决定参加本项目，同意项目执行方按照本文件载明的目的、方式和范围处理您的个人信息。</p>
+                        <br>
+                        <p><strong>一、 项目目的及服务内容</strong></p>
+                        <p>本项目为患者关爱和疾病管理支持项目，旨在通过规范的患者教育、随访提醒、依从性支持和患者自我管理协助，帮助患者及其家庭更好地理解疾病管理相关知识，提升与医疗卫生专业人士沟通的效率，并在医生既定诊疗方案之外提供非诊疗性的支持服务。
+                        </p>
+                        <p>在您自愿参加并符合项目条件后，项目执行方可根据项目规则和您的实际需求，为您提供以下一项或多项服务：</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>项目入组说明、服务规则说明及基础信息核验；</li>
+                            <li>疾病知识、用药注意事项、生活方式管理、复诊提醒等合规患者教育内容；</li>
+                            <li>对您提出的一般性项目问题或疾病管理问题进行非诊疗性答复；</li>
+                            <li>根据项目要求记录服务过程、随访结果、状态变化和必要的异常事件；</li>
+                            <li>在您报告疑似药品不良反应、特殊用药情况或其他药物安全相关信息时，按照法律法规及项目药物警戒要求进行记录、核实、上报和必要随访。</li>
+                        </ul>
+                        <p style="margin-top: 10px;">
+                            项目具体服务内容可能根据项目需求、患者情况及合规要求进行调整。若调整涉及个人信息处理目的、处理方式或信息范围的实质变更，项目执行方将再次向您告知并依法取得您的同意。</p>
+                        <br>
+                        <p><strong>二、 重要声明与风险提示</strong></p>
+                        <p>1. 本项目不涉及临床试验、诊疗服务、以及药品促销活动，也不构成对任何药品或治疗方案的推荐、保证或承诺。</p>
+                        <p>2.
+                            本项目不会替代、干预或影响您的主治医生及其他医疗卫生专业人士对您的诊断、处方、治疗、随访和医学判断。涉及诊断、治疗、用药调整、不良反应处置、急症处理等医学问题时，您应及时咨询医生或前往医疗机构就诊。
+                        </p>
+                        <p>3. 项目人员不具备也不会行使医生、药师或其他医疗卫生专业人士的诊疗职责。项目人员提供的信息仅限于项目规则内的教育、提醒、记录和服务协助，不应被理解为医学诊断、处方建议或治疗调整意见。
+                        </p>
+                        <p>4. 您是否参加、继续参加或退出本项目，均不会影响您在医疗机构接受常规诊疗服务，不会影响医生根据医学需要作出的诊疗决策，也不会作为您获得或使用任何药品、医疗服务或其他权益的前提条件。
+                        </p>
+                        <p>5. 本项目不以促进医疗卫生专业人士处方、要求、使用或购买任何产品为目的，不与任何产品销售行为或处方行为挂钩。</p>
+                        <p>6. 如您在项目沟通中主动提供病历、检查报告、处方、支付凭证或其他文件图片，项目执行方将仅在实现本项目目的的必要范围内处理；您应避免提供与本项目无关的信息。</p>
+                        <br>
+                        <p><strong>三、 入组、服务启动与退出</strong></p>
+                        <p><strong>3.1 入组条件与信息来源</strong></p>
+                        <p>您是否符合本项目条件，将以项目规则、医生诊断信息、您本人/监护人提供的信息以及项目执行方的最低必要核验为基础进行判断。项目执行方仅在本项目所必需的范围内收集和核验信息。</p>
+                        <p>本项目可能通过以下合规路径获得您的项目报名或联系方式：</p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>您本人或监护人主动报名、登记或向项目人员提供；</li>
+                            <li>医疗机构/医疗卫生专业人士在取得您同意或符合其内部规则的前提下，向项目执行方转介；</li>
+                            <li>经项目规则确认可执行的院内协同名单或项目试点名单，但项目人员在首次联系时仍应向您说明项目来源、目的和退出方式，未经您同意不得正式建档或持续服务。</li>
+                        </ul>
+                        <p style="margin-top: 10px;">
+                            为符合本项目实际管理边界，项目支持方及其销售/区域人员原则上不直接收集、复制、保存或处理可识别的患者个人信息。患者名单的核验、建档、触达、随访和服务记录原则上由项目执行方在授权范围内完成。
+                        </p>
+                        <p><strong>3.2 自愿参加</strong></p>
+                        <p>您完全自愿参加本项目。您有权在签署前充分了解项目规则、服务内容、个人信息处理方式及退出机制，并可自由决定是否参加。</p>
+                        <p><strong>3.3 退出与撤回同意</strong></p>
+                        <p>入组后，您可以在任何时候退出本项目或撤回对个人信息处理的同意。您可以通过项目人员、项目服务热线或本文件载明的联系方式提出退出/撤回申请。项目执行方将在收到申请后及时停止向您提供后续患者关爱服务，并原则上于三个工作日内完成项目状态变更和退出登记。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            您退出项目或撤回同意后，项目执行方将停止基于同意继续收集和使用您的个人信息；但撤回同意不影响撤回前已经基于您的同意开展的个人信息处理活动的效力。对依法需要留存的项目记录、审计记录、药物安全记录或监管要求资料，项目相关方将按照法律法规、监管要求和内部制度继续保存，并停止除存储、安全保护、审计、监管配合和药物安全履责以外的其他处理。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            如您同时要求删除个人信息，项目执行方将在法律法规允许且项目目的已实现或不再必要的范围内删除或匿名化处理您的个人信息；如依法暂不能删除，项目执行方将向您说明原因，并采取限制访问、去标识化、安全存储等措施。
+                        </p>
+                        <br>
+                        <p><strong>四、 沟通方式与服务边界</strong></p>
+                        <p>在您明确同意的前提下，项目执行方可通过您选择或提供的联系方式与您沟通，包括电话、短信、微信/企业微信、面对面沟通或项目规则允许的其他方式。您可以随时要求变更联系方式、变更可接受的沟通渠道或停止某一渠道的联系。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            项目人员不会在非项目授权渠道持续沟通，不会要求您提供与项目无关的身份、财务、支付、精确定位、生物识别、宗教信仰等信息，不会向您进行商业营销或处方推荐。</p>
+                        <p style="margin-top: 10px;">
+                            如您在沟通过程中描述紧急症状、严重不适、疑似严重不良反应或其他可能危及生命的情况，项目人员将建议您立即联系医生、前往医疗机构或拨打急救电话，并将按照药物安全要求进行必要记录和上报。
+                        </p>
+                        <br>
+                        <p><strong>五、 个人信息收集、使用和保护</strong></p>
+                        <p><strong>5.1 个人信息处理角色</strong></p>
+                        <p>为提供本项目服务，项目执行方将在项目授权范围内作为个人信息处理者或受托处理方处理您的个人信息；项目支持方将在项目管理、质量监督、合规审计、药物安全和法律法规要求范围内承担相应的监督和管理职责。正式项目文件或双方协议如对个人信息处理角色另有明确约定，以该等文件为准，但不影响您依据适用法律享有的个人信息权利。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            您的个人信息权利不会因参加本项目而转移。本项目不使用“个人信息所有权转让”等表述。项目相关方仅可在合法、正当、必要、最小化和本文件授权范围内处理您的个人信息。</p>
+                        <br>
+                        <p><strong>5.2 可能收集的个人信息类别</strong></p>
+                        <p>项目执行方将根据项目目的和最低必要原则收集以下一项或多项信息。实际收集范围以项目阶段、服务内容及您实际提供的信息为限。</p>
+                        <table
+                            style="width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 10px; margin-bottom: 10px;">
+                            <thead>
+                                <tr style="background-color: #F3F4F6;">
+                                    <th style="border: 1px solid #D1D5DB; padding: 6px; text-align: left;">信息类别</th>
+                                    <th style="border: 1px solid #D1D5DB; padding: 6px; text-align: left;">示例字段</th>
+                                    <th style="border: 1px solid #D1D5DB; padding: 6px; text-align: left;">主要用途</th>
+                                    <th style="border: 1px solid #D1D5DB; padding: 6px; text-align: left;">敏感性/必要性</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">身份与联系信息</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">
+                                        姓名、性别、年龄或出生年份、联系电话、微信号、监护人姓名及联系方式（如适用）、患者唯一识别码/脱敏 ID</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">确认服务对象、建立项目档案、开展联系和随访</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">必要信息；联系方式为提供服务所必需</td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">疾病及诊疗相关信息</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">
+                                        诊断疾病、主诊城市/医院/科室、就诊来源、治疗阶段、医生确认或患者自述的治疗相关信息、复诊/检查节点</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">判断项目适用性、提供疾病管理和随访提醒、形成项目服务记录
+                                    </td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">医疗健康信息，属于敏感个人信息</td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">服务过程信息</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">
+                                        入组时间、触达时间、沟通方式、随访结果、患者状态、退出/失访原因、下一步提醒安排、患者反馈问题</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">项目服务执行、过程管理、质量抽检、KPI 统计和问题闭环
+                                    </td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">与项目服务直接相关的必要记录</td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">药物安全相关信息</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">
+                                        疑似不良反应描述、发生时间、严重程度、处理情况、用药信息、必要的联系人信息、医生/医疗机构信息</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">履行药品不良反应收集、核实、上报、随访和监管配合义务</td>
+                                    <td style="border: 1px solid #D1D5DB; padding: 6px;">医疗健康信息，属于敏感个人信息；依法依规处理</td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <p><strong>5.3 个人信息使用目的</strong></p>
+                        <ul style="margin-left: 20px; margin-top: 10px;">
+                            <li>完成项目介绍、报名、入组资格核验、建档和身份确认；</li>
+                            <li>通过您同意的渠道与您联系并提供患者关爱服务；</li>
+                            <li>提供疾病管理教育、随访提醒、复诊提醒、依从性支持和自我管理协助；</li>
+                            <li>记录项目服务过程、服务结果、患者反馈、退出/失访情况和必要的异常事件；</li>
+                            <li>开展项目运营管理、质量抽检、数据核对、报表统计、审计追溯、风险管理和供应商绩效评估；</li>
+                            <li>处理投诉、咨询、数据更正、退出、删除等权利请求；</li>
+                            <li>履行法律法规、监管机构、司法机关、药物警戒及内部合规审计要求；</li>
+                            <li>在去标识化或汇总统计后，用于项目效果评估、服务流程优化和内部管理决策。</li>
+                        </ul>
+                        <p style="margin-top: 10px;">未经您的另行同意，项目相关方不会将您的个人信息用于商业营销、产品推广、处方推荐、销售跟进、与本项目无关的客户画像或自动化决策。</p>
+
+                        <p><strong>5.4 敏感个人信息的处理</strong></p>
+                        <p>您的疾病诊断、治疗、用药、不良反应、检查、随访等医疗健康信息属于敏感个人信息。基于本项目患者关爱及疾病管理的服务属性，收集该等信息是实现本项目目的所必需的。项目相关方将采取加密存储、严格权限控制等安全保障措施处理您的敏感个人信息。
+                        </p>
+                        <p style="margin-top: 10px;">不满 14
+                            周岁未成年的个人信息也属于敏感个人信息。项目执行方仅在具有特定目的和充分必要性，并采取严格保护措施的前提下处理该等信息。项目方将通过权限控制、去标识化、加密/访问控制、日志留痕、保密义务、人员培训和安全事件处置机制降低相关风险。
+                        </p>
+
+                        <br>
+                        <p><strong>5.5 委托处理、共享及项目支持方接触边界</strong></p>
+                        <p>为完成本项目，项目执行方可能在项目授权范围内委托服务商、质量审计人员或其他经授权人员处理必要信息。项目执行方应与受托方约定处理目的、期限、方式、个人信息种类、保护措施、保密义务、返还/删除要求和违约责任，并监督其处理活动。未经授权，受托方不得超范围处理或再次转委托。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            项目支持方原则上仅接收无法直接识别到个人的汇总统计数据、去标识化项目管理数据、质量评估结果和风险问题清单，用于项目管理、质量监督、审计、合规和决策支持。除药物安全、法律法规/监管要求、经您单独同意或为完成必要审计且采取严格控制措施的情形外，项目支持方不直接接收、保存或处理含姓名、电话、微信号等直接识别信息的患者明细。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            如因质量审计、合规调查或监管配合确需查看原始记录，项目相关方应优先采用去标识化、现场查阅不复制、最小权限、最短时间、日志留痕等方式，并限定在实现审计或监管目的所必要的范围内。</p>
+                        <p style="margin-top: 10px;">除本文件载明情形或法律法规另有规定外，未经您的单独同意，项目相关方不会向本项目之外的组织或个人提供您的可识别个人信息。</p>
+
+                        <br>
+                        <p><strong>5.6 药物安全及不良事件处理</strong></p>
+                        <p>如果您在项目过程中主动报告或项目人员获知您在使用项目支持方相关药品/产品期间发生疑似不良反应、特殊用药情况、妊娠暴露、用药错误、产品质量投诉、过量使用、疗效缺失或其他药物安全相关情况，项目人员有义务按照适用法律法规、药物警戒制度和项目
+                            SOP 进行记录、核实、上报和必要随访。</p>
+                        <p style="margin-top: 10px;">
+                            为履行药物安全义务，项目执行方可能需要收集、使用、传输或向项目支持方药物警戒部门、其受托药物警戒服务商、医疗卫生专业人士、监管机构或法律法规要求的其他接收方提供必要信息。该等处理目的限于药品安全性评价、药物警戒报告、监管配合、风险控制和必要随访。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            即使您退出本项目或撤回一般项目服务同意，已经收集并依法需要保存或上报的药物安全信息，仍可能按照法律法规和药物警戒要求继续保存、核实、随访或上报。项目相关方将在可行范围内采用匿名化或去标识化方式处理和上报。
+                        </p>
+
+                        <br>
+                        <p><strong>5.7 存储地点、安全措施与保存期限</strong></p>
+                        <p>您的个人信息原则上存储在中华人民共和国境内。项目相关方将采取与信息敏感程度相匹配的技术和组织措施，包括但不限于权限分级、最小授权、账号管理、访问日志、加密或安全传输、去标识化、备份与恢复、保密协议、人员培训、质量抽检和安全事件应急处理。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            项目服务记录、随访记录、退出记录、质量审计记录和相关过程文件的保存期限，以实现本项目目的所必需的最短期限为原则，并结合适用法律法规、监管要求、合同要求和项目审计要求确定。一般项目运营记录建议在项目结束或您退出后保存不超过【三】年；如法律法规、监管要求、争议处理、药物安全或审计要求需要更长保存期限的，从其规定或项目制度。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            保存期限届满后，项目相关方将依法删除、匿名化处理或采取其他合规处置方式。纸质文件（如有）应由授权人员保管，采取上锁、登记、归档和销毁留痕等措施；电子数据应存储在授权系统或服务器中，不得以个人设备、非授权网盘或私人聊天工具长期保存。
+                        </p>
+
+                        <br>
+                        <p><strong>5.8 您的个人信息权利</strong></p>
+                        <p>在适用法律允许的范围内，您有权了解、查阅、复制、更正、补充、删除您的个人信息，有权撤回同意、限制或拒绝非必要处理，有权要求解释个人信息处理规则，并有权对个人信息处理活动提出投诉或举报。
+                        </p>
+                        <p style="margin-top: 10px;">
+                            如您需要行使上述权利，可通过项目人员或本文件载明联系方式提出申请。项目执行方将在核验身份后及时处理；如因法律法规、监管要求、药物安全、审计或技术原因暂不能完全满足您的请求，项目执行方将向您说明原因，并在必要范围内停止非必要处理或采取安全保护措施。
+                        </p>
                     </div>
-                    <div class="consent-pages" id="consentPagesList">
-                        <!-- 动态渲染 -->
+
+                    <div style="font-size: 14px; font-weight: 600; margin-bottom: 10px;">请在下方空白处手写签名：</div>
+                    <div class="signature-area">
+                        <canvas id="signatureCanvas" class="signature-canvas"></canvas>
+                        <div class="clear-sign-btn" onclick="clearSignature()">清除</div>
+                    </div>
+                </div>
+
+                <!-- 上传图片模式 -->
+                <div id="uploadMode" style="display: none;">
+                    <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.6;">
+                        如果您已签署纸质《知情同意书》，请将所有签署页拍照并在此处上传。
+                    </p>
+
+                    <div class="upload-area" id="mainUploadBtn" onclick="document.getElementById('fileInput').click()">
+                        <span style="font-size: 50px; display: block; margin-bottom: 15px;">📄</span>
+                        <div style="font-weight: 700; color: var(--primary-color); font-size: 18px;">点击拍摄或上传</div>
+                        <p style="font-size: 13px; color: var(--text-muted); margin-top: 8px;">支持多页连续上传</p>
+                    </div>
+                    <input type="file" id="fileInput" hidden accept="image/*" onchange="previewImage(this)">
+
+                    <!-- 多页预览区域 -->
+                    <div id="consentMultiArea" class="consent-multi-area" style="display: none;">
+                        <div class="consent-header">
+                            <span class="consent-header-title">已添加页码</span>
+                            <span class="consent-count" id="consentCount">已上传 0 页</span>
+                        </div>
+                        <div class="consent-pages" id="consentPagesList">
+                            <!-- 动态渲染 -->
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <button class="btn btn-primary" id="submitBtn" disabled onclick="submitConsent()"
+            <button class="btn btn-primary" id="submitBtn" onclick="submitConsent()"
                 style="margin-top: 10px;">提交</button>
         </div>
 
@@ -395,10 +663,18 @@
         let photos = [];
         let uploadPages = []; // 当前正在上传的页码
 
+        let currentMode = 'esign'; // 'esign' or 'upload'
+
         function initConsentPage() {
             const hasPhotos = (patient.consentPhotos && patient.consentPhotos.length > 0) || patient.consentPhoto;
-            if (hasPhotos && patient.consentStatus !== 'withdrawn') {
-                photos = patient.consentPhotos || [patient.consentPhoto];
+            const hasEsign = patient.consentMethod === 'esign' && patient.consentSignatureImg;
+
+            if ((hasPhotos || hasEsign) && patient.consentStatus !== 'withdrawn') {
+                if (patient.consentMethod === 'esign') {
+                    photos = [patient.consentSignatureImg];
+                } else {
+                    photos = patient.consentPhotos || [patient.consentPhoto];
+                }
                 showManageView();
             } else {
                 showUploadView();
@@ -408,6 +684,7 @@
         function showUploadView() {
             document.getElementById('uploadView').classList.remove('hidden');
             document.getElementById('manageView').classList.add('hidden');
+            setTimeout(initSignaturePad, 100);
         }
 
         function showManageView() {
@@ -415,6 +692,12 @@
             document.getElementById('manageView').classList.remove('hidden');
             updateImageView();
             document.getElementById('infoTime').innerText = patient.consentDate || App.formatDate(new Date());
+
+            if (patient.consentMethod === 'esign') {
+                document.getElementById('navControls').style.display = 'none';
+                document.getElementById('pageIndicator').style.display = 'none';
+                document.querySelector('.card-title').innerText = '电子签名预览';
+            }
 
             const banner = document.getElementById('statusBanner');
             if (patient.consentStatus === 'approved' || patient.consentStatus === 'active') {
@@ -430,8 +713,8 @@
             } else if (patient.consentStatus === 'uploaded') {
                 banner.className = 'status-header uploaded';
                 document.getElementById('statusTitle').innerText = '已上传';
-                document.getElementById('statusDesc').innerText = '请完善个人资料以触发最终审核';
-                document.getElementById('infoStatus').innerText = '待激活';
+                document.getElementById('statusDesc').innerText = '请完善个人资料';
+                document.getElementById('infoStatus').innerText = '已签署';
             } else if (patient.consentStatus === 'withdraw_reviewing') {
                 banner.className = 'status-header pending';
                 document.getElementById('statusTitle').innerText = '撤回申请中';
@@ -448,32 +731,102 @@
                 document.getElementById('navControls').style.display = 'none';
                 document.getElementById('pageIndicator').style.display = 'none';
             }
-
-            // 添加撤回按钮
-            if (patient.consentStatus !== 'withdrawn' && patient.consentStatus !== 'withdraw_reviewing') {
-                const actionArea = document.getElementById('manageView');
-                if (!document.getElementById('withdrawBtn')) {
-                    const btn = document.createElement('button');
-                    btn.id = 'withdrawBtn';
-                    btn.className = 'btn btn-outline';
-                    btn.style.marginTop = '20px';
-                    btn.style.borderColor = 'var(--danger-color)';
-                    btn.style.color = 'var(--danger-color)';
-                    btn.innerText = '撤回知情同意';
-                    btn.onclick = withdrawConsent;
-                    actionArea.appendChild(btn);
-                }
-            }
         }
 
         function updateImageView() {
-            document.getElementById('finalPreview').src = photos[currentPage];
-            document.getElementById('pageIndicator').innerText = `第 ${currentPage + 1} / ${photos.length} 页`;
+            if (photos && photos.length > 0) {
+                document.getElementById('finalPreview').src = photos[currentPage];
+            }
+            if (patient.consentMethod !== 'esign') {
+                document.getElementById('pageIndicator').innerText = `第 ${currentPage + 1} / ${photos.length} 页`;
+            }
         }
 
         function switchPage(dir) {
             currentPage = (currentPage + dir + photos.length) % photos.length;
             updateImageView();
+        }
+
+        function switchSignMode(mode) {
+            currentMode = mode;
+            if (mode === 'esign') {
+                document.getElementById('tab-esign').classList.add('active');
+                document.getElementById('tab-upload').classList.remove('active');
+                document.getElementById('esignMode').style.display = 'block';
+                document.getElementById('uploadMode').style.display = 'none';
+                document.getElementById('submitBtn').disabled = false;
+                setTimeout(initSignaturePad, 50);
+            } else {
+                document.getElementById('tab-upload').classList.add('active');
+                document.getElementById('tab-esign').classList.remove('active');
+                document.getElementById('uploadMode').style.display = 'block';
+                document.getElementById('esignMode').style.display = 'none';
+                document.getElementById('submitBtn').disabled = uploadPages.length === 0;
+            }
+        }
+
+        // Canvas 签名板逻辑
+        let canvas, ctx, isDrawing = false, hasDrawn = false;
+
+        function initSignaturePad() {
+            if (canvas) return; // 避免重复初始化
+            canvas = document.getElementById('signatureCanvas');
+            if (!canvas) return;
+
+            const rect = canvas.parentElement.getBoundingClientRect();
+            canvas.width = rect.width;
+            canvas.height = rect.height;
+
+            ctx = canvas.getContext('2d');
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 3;
+            ctx.lineCap = 'round';
+            ctx.lineJoin = 'round';
+
+            const getPos = (e) => {
+                const rect = canvas.getBoundingClientRect();
+                const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+                const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+                return {
+                    x: clientX - rect.left,
+                    y: clientY - rect.top
+                };
+            };
+
+            const startDraw = (e) => {
+                e.preventDefault();
+                isDrawing = true;
+                hasDrawn = true;
+                const pos = getPos(e);
+                ctx.beginPath();
+                ctx.moveTo(pos.x, pos.y);
+            };
+
+            const draw = (e) => {
+                if (!isDrawing) return;
+                e.preventDefault();
+                const pos = getPos(e);
+                ctx.lineTo(pos.x, pos.y);
+                ctx.stroke();
+            };
+
+            const endDraw = () => {
+                isDrawing = false;
+            };
+
+            canvas.addEventListener('mousedown', startDraw);
+            canvas.addEventListener('mousemove', draw);
+            window.addEventListener('mouseup', endDraw);
+
+            canvas.addEventListener('touchstart', startDraw, { passive: false });
+            canvas.addEventListener('touchmove', draw, { passive: false });
+            window.addEventListener('touchend', endDraw);
+        }
+
+        function clearSignature() {
+            if (!ctx || !canvas) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasDrawn = false;
         }
 
         function previewImage(input) {
@@ -523,7 +876,9 @@
             if (uploadPages.length === 0) {
                 document.getElementById('consentMultiArea').style.display = 'none';
                 document.getElementById('mainUploadBtn').style.display = 'block';
-                document.getElementById('submitBtn').disabled = true;
+                if (currentMode === 'upload') {
+                    document.getElementById('submitBtn').disabled = true;
+                }
             }
             renderUploadPages();
         }
@@ -532,18 +887,35 @@
             const patientInfo = App.getPatientInfo();
             const nextStatus = patientInfo.hasProfile ? 'reviewing' : 'uploaded';
 
-            App.savePatientInfo({
-                consentPhotos: uploadPages,
+            let updateData = {
+                consentMethod: currentMode,
                 consentStatus: nextStatus,
-                ocrConsent: true,
                 consentDate: App.formatDate(new Date())
-            });
+            };
+
+            if (currentMode === 'esign') {
+                if (!hasDrawn) {
+                    alert('请先完成手写签名');
+                    return;
+                }
+                updateData.consentSignatureImg = canvas.toDataURL('image/png');
+                updateData.ocrConsent = true;
+            } else {
+                if (uploadPages.length === 0) {
+                    alert('请上传知情同意书图片');
+                    return;
+                }
+                updateData.consentPhotos = uploadPages;
+                updateData.ocrConsent = true;
+            }
+
+            App.savePatientInfo(updateData);
 
             if (nextStatus === 'reviewing') {
                 alert('知情同意书已提交，资料审核中');
                 App.navigateTo('index.html');
             } else {
-                alert('知情同意书已上传，请继续完善个人信息');
+                alert('知情同意书已提交，请继续完善个人信息');
                 App.navigateTo('upload-docs.html');
             }
         }
