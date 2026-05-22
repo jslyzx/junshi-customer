@@ -83,25 +83,6 @@
             <div class="symptom-tag" onclick="toggleTag(this)">其他</div>
         </div>
 
-        <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 18px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
-            <span style="width: 3px; height: 14px; background: #FF4D4F; border-radius: 2px;"></span>
-            程度感观
-        </div>
-        <div class="severity-grid">
-            <div class="severity-item" data-level="1" onclick="selectSeverity(this)">
-                <span class="sev-icon">😊</span>
-                <span>轻度</span>
-            </div>
-            <div class="severity-item" data-level="2" onclick="selectSeverity(this)">
-                <span class="sev-icon">😐</span>
-                <span>中度</span>
-            </div>
-            <div class="severity-item" data-level="3" onclick="selectSeverity(this)">
-                <span class="sev-icon">😫</span>
-                <span>重度</span>
-            </div>
-        </div>
-
         <div style="font-size: 13px; font-weight: 700; color: var(--text-muted); margin-bottom: 12px; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
             <span style="width: 3px; height: 14px; background: #FF4D4F; border-radius: 2px;"></span>
             具体描述
@@ -121,26 +102,15 @@
 
     <script src="js/app.js"></script>
     <script>
-        let selectedLevel = '';
 
         function toggleTag(el) {
             el.classList.toggle('active');
-        }
-
-        function selectSeverity(el) {
-            document.querySelectorAll('.severity-item').forEach(item => item.classList.remove('active'));
-            el.classList.add('active');
-            selectedLevel = el.innerText;
         }
 
         function submitSymptoms() {
             const tags = Array.from(document.querySelectorAll('.symptom-tag.active')).map(t => t.innerText);
             if (tags.length === 0) {
                 alert('请选择至少一项症状');
-                return;
-            }
-            if (!selectedLevel) {
-                alert('请选择症状程度');
                 return;
             }
 
@@ -151,7 +121,6 @@
             const reports = patient.symptomReports || [];
             reports.unshift({
                 symptoms: tags,
-                level: selectedLevel,
                 desc: desc,
                 date: new Date().toLocaleString()
             });
